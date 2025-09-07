@@ -6,7 +6,7 @@
 
 ![Version](https://img.shields.io/badge/version-5.10--debug--struct--logger-blue)
 ![SourceMod](https://img.shields.io/badge/sourcemod-1.10+-green)
-![CS:S](https://img.shields.io/badge/css-v34-orange)
+![CS:S](https://img.shields.io/badge/CS:Source-v34-orange)
 
 Профессиональная система для организации Mix и War матчей на серверах Counter-Strike: Source. Полная автоматизация всех этапов игры - от сбора готовности до финального счета.
 
