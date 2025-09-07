@@ -1,0 +1,4 @@
+"Plugin"
+{
+	"file"	"../cstrike/addons/bufferfix/bin/bufferfix.so"
+}
