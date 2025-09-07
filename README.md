@@ -4,7 +4,7 @@
 
 # DonutMatch - Система Mix и War матчей для CS:S
 
-![Version](https://img.shields.io/badge/version-5.9--debug--mix--logic-blue)
+![Version](https://img.shields.io/badge/version-5.10--debug--struct--logger-blue)
 ![SourceMod](https://img.shields.io/badge/sourcemod-1.10+-green)
 ![CS:S](https://img.shields.io/badge/css-v34-orange)
 
