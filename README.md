@@ -134,7 +134,7 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
 
 - **SourceMod 1.10+**
 - **Counter-Strike: Source** (проверено на v34)
-- **Методмап CBasePlayers** (включен в поставку)
+- **MapChooser** (для смены карт в конце матчей)
 
 ## 📁 Структура проекта
 
