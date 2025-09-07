@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="400" height="400" alt="DonutMatch" src="https://github.com/user-attachments/assets/a3f4ea71-49fb-409e-9d93-58c185415890" />
+  <img width="400" height="400" alt="DonutMatch" src="https://github.com/user-attachments/assets/e23ba4f5-5091-40af-ba7c-89d365da4420" />
 </p>
 
 # DonutMatch - Система Mix и War матчей для CS:S
