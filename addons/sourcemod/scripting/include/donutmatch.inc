@@ -49,8 +49,9 @@ forward void DonutMatch_OnRoundScore(int scoreT, int scoreCT, int winnerTeam);
 /**
  * Вызывается при начале матча
  *
- * @param data          Массив данных о матче [mode, playerCount, players[], teams[]]
- * @param dataSize      Размер массива данных
+ * @param data          Массив: [mode, playerCount, players[MAXPLAYERS], teams[MAXPLAYERS]].
+ *                      Индексы игроков начинаются с data[2], команды - с data[2 + MAXPLAYERS].
+ * @param dataSize      Размер массива: 2 + MAXPLAYERS * 2
  * @noreturn
  */
 forward void DonutMatch_OnMatchStart(const any[] data, int dataSize);
@@ -63,6 +64,24 @@ forward void DonutMatch_OnMatchStart(const any[] data, int dataSize);
  * @noreturn
  */
 forward void DonutMatch_OnMatchEnd(const any[] data, int dataSize);
+
+/**
+ * Вызывается при Reset матча, если до сброса система была не в State_ReadySystem.
+ * Не заменяет DonutMatch_OnMatchEnd и может вызываться при отмене/сбросе матча.
+ *
+ * @param reason        Причина сброса
+ * @noreturn
+ */
+forward void DonutMatch_OnMatchReset(const char[] reason);
+
+/**
+ * Вызывается после 15-го раунда основного времени перед сменой сторон.
+ *
+ * @param scoreT        Счёт T перед сменой сторон
+ * @param scoreCT       Счёт CT перед сменой сторон
+ * @noreturn
+ */
+forward void DonutMatch_OnHalfTime(int scoreT, int scoreCT);
 
 
 /**
@@ -87,11 +106,10 @@ native MatchState DonutMatch_GetMatchState();
 native GameMode DonutMatch_GetGameMode();
 
 /**
- * Проверяет готовность игрока
+ * Проверяет сохраненный статус готовности игрока
  *
  * @param client        Индекс игрока для проверки
- * @return              true если готов, false если не готов
- * @error               Неверный индекс игрока
+ * @return              true если готов; false если не готов или client вне диапазона 1..MaxClients
  */
 native bool DonutMatch_GetPlayerReady(int client);
 
@@ -100,8 +118,9 @@ native bool DonutMatch_GetPlayerReady(int client);
  *
  * @param client        Индекс игрока
  * @param ready         true - готов, false - не готов
- * @return              true если успешно, false если ошибка
- * @error               Неверный игрок или не в игре
+ * @return              true если client находится в игре и вызов обработан; false при неверном
+ *                      индексе или если клиент не находится в игре. Повторная установка того же значения
+ *                      возвращает true, но не вызывает DonutMatch_OnPlayerReady повторно.
  */
 native bool DonutMatch_SetPlayerReady(int client, bool ready);
 
@@ -115,14 +134,16 @@ native bool DonutMatch_SetPlayerReady(int client, bool ready);
 native void DonutMatch_GetScore(int &scoreT, int &scoreCT);
 
 /**
- * Принудительно запускает матч если в состоянии готовности
+ * Принудительно запускает матч, минуя готовность игроков и обычные предстартовые этапы.
+ * Плагин должен быть в State_ReadySystem, и в T/CT должен находиться точный настроенный состав.
  *
  * @return              true если успешно, false если ошибка
  */
 native bool DonutMatch_ForceStart();
 
 /**
- * Принудительно останавливает матч с причиной
+ * Сбрасывает состояние матча с причиной, очищает сохраненный плагином состав и счет и запускает
+ * рестарт раунда. Не переводит игроков в другие команды и не вызывает DonutMatch_OnMatchEnd.
  *
  * @param reason        Причина остановки матча
  * @return              true если успешно, false если ошибка
@@ -137,7 +158,7 @@ native bool DonutMatch_ForceStop(const char[] reason);
 native int DonutMatch_GetPlayersPerSide();
 
 /**
- * Получает массив игроков в текущем матче
+ * Получает копию списка участников текущего/запускаемого матча.
  *
  * @return              ArrayList с индексами игроков в матче
  * @note                закрыть с delete или CloseHandle()
@@ -145,11 +166,11 @@ native int DonutMatch_GetPlayersPerSide();
 native ArrayList DonutMatch_GetLivePlayers();
 
 /**
- * Проверяет участвует ли игрок в текущем матче
+ * Проверяет, входит ли client в сохраненный состав текущего/запускаемого матча
  *
  * @param client        Индекс игрока для проверки
- * @return              true если участвует в матче, false если нет
- * @error               Неверный индекс игрока
+ * @return              true если входит в состав; false если нет или client вне диапазона
+ *                      1..MaxClients
  */
 native bool DonutMatch_IsPlayerInMatch(int client);
 
