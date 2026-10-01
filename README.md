@@ -1,97 +1,183 @@
 <p align="center">
-  <img width="400" height="400" alt="DonutMatch" src="https://github.com/user-attachments/assets/e23ba4f5-5091-40af-ba7c-89d365da4420" />
+  <img width="300" alt="DonutMatch" src="https://github.com/user-attachments/assets/e23ba4f5-5091-40af-ba7c-89d365da4420" />
 </p>
 
-# DonutMatch - Система Mix и War матчей для CS:S
+<h1 align="center">DonutMatch</h1>
+<p align="center">Mix и War матчи для Counter-Strike: Source — от сбора игроков до финального счёта.</p>
 
-![Version](https://img.shields.io/badge/version-6.1--global--test--load-blue)
-![SourceMod](https://img.shields.io/badge/sourcemod-1.10+-green)
-![CS:S](https://img.shields.io/badge/CS:Source-v34-orange)
+<p align="center">
+  <img src="https://img.shields.io/badge/version-6.1--global--test-blue" alt="Version 6.1-global-test">
+  <img src="https://img.shields.io/badge/SourceMod-1.10%2B-green" alt="SourceMod 1.10+">
+  <img src="https://img.shields.io/badge/game-Counter--Strike%3A%20Source-orange" alt="Counter-Strike: Source">
+</p>
 
-Профессиональная система для организации Mix и War матчей на серверах Counter-Strike: Source. Полная автоматизация всех этапов игры - от сбора готовности до финального счета.
+---
 
-## 🚀 Возможности
+## Что умеет плагин
 
-### 🎮 Режимы игры
-- **Mix режим** - Классический микс с выбором капитанов и пикингом игроков
-- **War режим** - Команда на команду с ножевым раундом за выбор стороны
+| **Mix** | **War** |
+|---|---|
+| Собирает игроков, проводит ножевой раунд капитанов и помогает выбрать команды. | После сбора игроков позволяет выбрать ножевой раунд за сторону или сразу начать матч. |
+| Поддерживает замены во время матча. | При счёте 15:15 запускает овертайм. |
 
-### ⚙️ Автоматизация
-- ✅ Автоматический сбор готовности (`!ready`)
-- ✅ Ножевые раунды капитанов (Mix)
-- ✅ Пикинг игроков через меню
-- ✅ Ведение счета и определение победителя
-- ✅ Овертаймы при ничьей 15:15 (War)
-- ✅ Система замен игроков (`!ask`)
-- ✅ Автоподбор замен при дисконнектах
+**Для обоих режимов:** форматы от 2×2 до 5×5, автоматический подсчёт раундов, смена сторон и определение победителя. По желанию можно включить запись SourceTV, журналы матчей и сохранение результатов в базе данных.
 
-### 🎯 Команды
-| Команда | Описание | Доступность |
-|---------|----------|-------------|
-| `!ready` / `!r` | Готовность к матчу | Все игроки |
-| `!info` | Статус готовности | Все игроки |
-| `!knife` | Запуск ножевого раунда | War режим |
-| `!stay` | Начать без ножевого | War режим |
-| `!ask` | Предложить замену | Mix режим |
-| `!forcemix` | Принудительный старт Mix | Админы |
-| `!forcewar` | Принудительный старт War | Админы |
+## Быстрый старт
 
-## 📦 Установка
+1. Убедитесь, что на сервере установлены **SourceMod 1.10+** и стандартный плагин **MapChooser**. MapChooser обязателен: без него DonutMatch не загрузится.
+2. Возьмите `donut_match.smx` из [`addons/sourcemod/plugins`](addons/sourcemod/plugins).
+3. Поместите файл плагина в `addons/sourcemod/plugins/`.
+4. Запустите сервер или загрузите плагин командой:
 
-1. **Скачайте последнюю версию** со [страницы релизов](https://github.com/Akllike/DonutMatch/releases)
-2. **Установите файлы** в соответствующие папки:
-   - `donut_match.smx` → `addons/sourcemod/plugins/`
-   - `donutmatch.inc` → `addons/sourcemod/scripting/include/`
-3. **Установите папку конфигов** → `cfg/donutmatch/`
-4. **Настройте конфигурационные файлы** (см. ниже)
-5. **Перезапустите сервер** или выполните `sm plugins load donut_match.smx`
+   ```text
+   sm plugins load donut_match
+   ```
 
-## ⚙️ Конфигурация
+5. Откройте созданный плагином файл `cfg/sourcemod/donutmatch/donutmatch.cfg` и задайте режим и формат матча.
+6. Игроки переходят в T и CT, затем отмечаются готовыми командой `!ready`.
 
-### Основные настройки
-```sourcemod
-// cfg/sourcemod/donutmatch.cfg
-sm_donut_mode "1"                // 1 - Mix, 2 - War
-sm_donut_players_per_side "5"    // 5v5, 4v4, etc
-sm_donut_restart_delay "3.5"     // Задержка перед стартом
-sm_donut_auto_ready "0"          // Авто-готовность новых игроков
-sm_donut_sub_time "10"           // Время на ответ для замены
-```
+> Include для разработчиков [`donutmatch.inc`](scripting/include/donutmatch.inc) устанавливайте отдельно, только если другие плагины будут использовать API DonutMatch.
 
-### Файлы конфигурации матча
-Переместите папку `cfg/donutmatch/`:
+## Как начать матч
 
-- `donut_warmup.cfg` - Настройки для режима готовности
-- `donut_mix_start.cfg` - Настройки для начала Mix матча  
-- `donut_war_start.cfg` - Настройки для начала War матча
-- `donut_mix_end.cfg` - Настройки после Mix матча
-- `donut_war_end.cfg` - Настройки после War матча
-- `donut_war_overtime_start.cfg` - Настройки для овертайма
+### Игрокам
 
-## 🛠️ API для разработчиков
+Введите команду в чате:
 
-Плагин предоставляет полное API для интеграции:
+| Команда | Что делает |
+|---|---|
+| `!ready` или `!r` | Отметиться готовым или снять готовность. Доступно игрокам в T/CT во время сбора. |
+| `!info` | Посмотреть, кто уже готов. |
+| `!knife` | В режиме War начать ножевой раунд за выбор стороны. |
+| `!stay` | В режиме War начать матч без ножевого раунда. |
+| `!score` или `!scores` | Посмотреть текущий счёт или результат последнего матча. |
+| `!lastscore` | Посмотреть счёт последнего завершённого матча. |
+| `!ask` | В Mix предложить наблюдателю заменить вас. |
+| `!damage` | Посмотреть нанесённый и полученный урон за текущий раунд. |
+| `!money` | Показать деньги и основное оружие команды. |
 
-### Forwards (События)
+Команды также можно вводить в консоли с префиксом `sm_`: например, `sm_ready`.
+
+**Замена в Mix:** используйте `!ask`, выберите игрока-наблюдателя и дождитесь ответа. Если приглашённый игрок откажется или не ответит за отведённое время, он будет кикнут.
+
+### Администраторам
+
+| Команда | Назначение | Доступ |
+|---|---|---|
+| `sm_forcemix` | Принудительно начать Mix, минуя обычную подготовку. | Root (`z`) |
+| `sm_forcewar` | Принудительно начать War, минуя обычную подготовку. | Root (`z`) |
+| `sm_donut_forceallready` | Отметить готовыми всех игроков в T/CT. | Root (`z`) |
+| `sm_donut_forceallunready` | Снять готовность у игроков в T/CT. | Root (`z`) |
+| `sm_forcevote` | Запустить голосование за следующую карту. | Change Map (`c`) |
+
+Для принудительного старта нужен полный состав, поровну распределённый между командами. Принудительный Mix начинает матч сразу — без ножевого раунда капитанов и выбора игроков.
+
+## Настройки
+
+Основные параметры находятся в `cfg/sourcemod/donutmatch/donutmatch.cfg`. Плагин создаёт этот файл при первом запуске.
+
+| Параметр | По умолчанию | Значение |
+|---|---:|---|
+| `sm_donut_mode` | `1` | Режим: `1` — Mix, `2` — War |
+| `sm_donut_players_per_side` | `5` | Игроков в каждой команде: от 2 до 5 |
+| `sm_donut_restart_delay` | `3.5` | Задержка перед стартом, в секундах |
+| `sm_donut_auto_ready` | `0` | Автоматически отмечать новых игроков готовыми: `0` — нет, `1` — да |
+| `sm_donut_sub_time` | `10` | Сколько секунд дать на ответ по замене |
+| `sm_donut_auto_record` | `1` | Записывать SourceTV-демо матчей |
+| `sm_donut_log_matches` | `1` | Записывать события матча в JSONL-файл |
+| `sm_donut_database_enabled` | `0` | Сохранять результаты в базу данных |
+| `sm_donut_block_warmup_grenades` | `1` | Блокировать гранаты и autobuy/rebuy до live-раунда |
+| `sm_donut_round_money` | `1` | Показывать деньги и основное оружие в начале раунда |
+| `sm_donut_log_level` | `1` | Подробность лога: `0` — Debug, `1` — Info, `2` — Warn, `3` — Error |
+
+> Изменение режима или формата сбрасывает текущую подготовку или матч.
+
+<details>
+<summary><strong>Дополнительно: конфиги режимов, база данных и логи</strong></summary>
+
+### Конфиги режимов
+
+Дополнительные конфиги создаются вручную в `cfg/donutmatch/`:
+
+| Файл | Когда применяется |
+|---|---|
+| `donut_server_start.cfg` | При загрузке плагина |
+| `donut_warmup.cfg` | При сбросе матча и возврате к ожиданию |
+| `donut_mix_start.cfg` | При подготовке Mix |
+| `donut_war_start.cfg` | При подготовке War и перед второй половиной |
+| `donut_mix_end.cfg` | После Mix |
+| `donut_war_end.cfg` | После War |
+| `donut_war_overtime_start.cfg` | В начале каждого War-овертайма |
+
+### Сохранение результатов
+
+Для базы данных установите `sm_donut_database_enabled 1` и добавьте подключение с именем `donutmatch` в `addons/sourcemod/configs/databases.cfg`. Таблица `donutmatch_results` создаётся автоматически.
+
+- Журналы событий матчей: `addons/sourcemod/logs/donutmatch/`.
+- Диагностический лог: `donutmatch.log` в каталоге логов SourceMod.
+- Для записи демо включите SourceTV (`tv_enable 1`).
+
+</details>
+
+## Требования
+
+- Counter-Strike: Source.
+- SourceMod 1.10 или новее.
+- Стандартный SourceMod MapChooser.
+- SourceTV — только если нужна запись демо.
+
+## Поддержка
+
+Нашли ошибку или хотите предложить улучшение? [Создайте Issue](https://github.com/Akllike/DonutMatch/issues) и укажите версию плагина и шаги для воспроизведения.
+
+- [Группа ВКонтакте](https://vk.com/jquerry)
+- [Telegram](https://t.me/donutmatch)
+
+> Плагин находится в разработке. Возможны ошибки и нестабильная работа.
+
+## Для разработчиков: SourcePawn API
+
+Установите [`donutmatch.inc`](scripting/include/donutmatch.inc) в `addons/sourcemod/scripting/include/`, затем подключите его в плагине:
+
 ```sourcepawn
-DonutMatch_OnPlayerReady(int client, bool ready)
-DonutMatch_OnRoundScore(int scoreT, int scoreCT, int winnerTeam) 
-DonutMatch_OnMatchStart(const any[] data, int dataSize)
-DonutMatch_OnMatchEnd(const any[] data, int dataSize)
+#include <donutmatch>
 ```
 
-### Natives (Функции)
+Include предоставляет перечисления `GameMode`, `MatchState`, natives и forwards.
+
+### События (forwards)
+
 ```sourcepawn
-bool DonutMatch_IsMatchLive()
-MatchState DonutMatch_GetMatchState()
-bool DonutMatch_GetPlayerReady(int client)
-bool DonutMatch_SetPlayerReady(int client, bool ready)
-void DonutMatch_GetScore(int &scoreT, int &scoreCT)
-bool DonutMatch_ForceStart()
-bool DonutMatch_ForceStop(const char[] reason)
+forward void DonutMatch_OnPlayerReady(int client, bool ready);
+forward void DonutMatch_OnRoundScore(int scoreT, int scoreCT, int winnerTeam);
+forward void DonutMatch_OnMatchStart(const any[] data, int dataSize);
+forward void DonutMatch_OnMatchEnd(const any[] data, int dataSize);
+forward void DonutMatch_OnMatchReset(const char[] reason);
+forward void DonutMatch_OnHalfTime(int scoreT, int scoreCT);
 ```
 
-### Пример использования
+`OnMatchStart` передаёт массив `[mode, playerCount, players[MAXPLAYERS], teams[MAXPLAYERS]]`; `OnMatchEnd` — `[mode, scoreT, scoreCT]`. Для разбора используйте `DonutMatch_ParseMatchStartData` и `DonutMatch_ParseMatchEndData`. В `OnRoundScore` команда-победитель обозначается `2` (T) или `3` (CT). `OnMatchReset` не является событием завершения матча.
+
+### Функции (natives)
+
+```sourcepawn
+bool DonutMatch_IsMatchLive();
+MatchState DonutMatch_GetMatchState();
+GameMode DonutMatch_GetGameMode();
+bool DonutMatch_GetPlayerReady(int client);
+bool DonutMatch_SetPlayerReady(int client, bool ready);
+void DonutMatch_GetScore(int &scoreT, int &scoreCT);
+bool DonutMatch_ForceStart();
+bool DonutMatch_ForceStop(const char[] reason);
+int DonutMatch_GetPlayersPerSide();
+ArrayList DonutMatch_GetLivePlayers();
+bool DonutMatch_IsPlayerInMatch(int client);
+```
+
+`DonutMatch_ForceStart` работает только в состоянии ожидания при полном составе. `DonutMatch_GetLivePlayers` возвращает копию `ArrayList` — освободите её после использования. Также доступны вспомогательные функции `DonutMatch_GetTeamName`, `DonutMatch_GetModeName` и `DonutMatch_GetStateName`.
+
+### Пример: получить состав при старте
+
 ```sourcepawn
 #include <donutmatch>
 
@@ -101,68 +187,14 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
     int playerCount;
     int players[MAXPLAYERS];
     int teams[MAXPLAYERS];
-    
+
     if (DonutMatch_ParseMatchStartData(data, mode, playerCount, players, teams))
     {
-        // Ваша логика здесь
+        // Здесь доступны режим и состав матча.
     }
 }
 ```
 
-## 🎨 Состояния матча
-
-Плагин управляет 8 состояниями:
-1. **ReadySystem** - Ожидание готовности
-2. **Warmup** - Разминка (только War)
-3. **CaptainKnife** - Ножевой капитанов (только Mix)
-4. **PickingPlayers** - Выбор игроков (только Mix)
-5. **KnifeRound_WAR** - Ножевой за сторону (только War)
-6. **Starting** - Запуск матча
-7. **Live** - Матч идет
-8. **Overtime** - Овертайм
-
-## 🔧 Требования
-
-- **SourceMod 1.10+**
-- **Counter-Strike: Source** (проверено на v34)
-- **MapChooser** (для смены карт в конце матчей)
-
-## 📁 Структура проекта
-
-```
-addons/sourcemod/
-├── scripting/
-│   ├── include/
-│       └── donutmatch.inc    # API для разработчиков
-├── plugins/
-│   └── donut_match.smx    # Скомпилированный плагин
-cfg/
-└── server.cfg
-├── donutmatch/       # Пользовательские конфиги
-    ├── donut_warmup.cfg
-    ├── donut_mix_start.cfg
-    └── ... etc
-```
-
-## 🐛 Поддержка и баги
-
-Нашли ошибку или есть предложение? 
-1. Проверьте [существующие issues](https://github.com/Akllike/DonutMatch/issues)
-2. Создайте новое issue с подробным описанием
-3. Укажите версию плагина и условия воспроизведения
-
-## 👥 Авторы
-
-- **phenom**(Akllike) - Разработчик и идеолог
-- **root** - Тестирование и предложения
-
-## 💬 Поддержка
-
-- **VK группа**: [DonutMatch](https://vk.com/jquerry)
-- **Telegram**: [DonutMatchTg](https://t.me/donutmatch)
-
 ---
 
-⭐ Если вам нравится этот плагин, поставьте звезду на GitHub!
-
-Плагин может быть нестабилен и работать неправильно, потому что он в стадии разработки. Если есть вопросы и предложения, можете задавать их в Issues.
+<p align="center">Если DonutMatch оказался полезен — поставьте ⭐ репозиторию!</p>
