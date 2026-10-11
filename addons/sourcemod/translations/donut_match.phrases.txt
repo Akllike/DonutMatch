@@ -1,0 +1,742 @@
+"Phrases"
+{
+    "ResetNotice"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} Match reset. Reason: {1}"
+        "ru" "{green}[DonutMatch]{white} Сброс состояния матча. Причина: {1}"
+    }
+    "ConfirmReady"
+    {
+        "en" "{green}[DonutMatch]{white} Confirm that you are ready to start the match. Type !ready."
+        "ru" "{green}[DonutMatch]{white} Теперь подтвердите готовность к началу матча. Напишите !ready."
+    }
+    "MatchStarts"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} Match starts in {1}..."
+        "ru" "{green}[DonutMatch]{white} Матч начнется через {1}..."
+    }
+    "CaptainsKnifeStarts"
+    {
+        "en" "{green}[DonutMatch]{white} All players are here! The captains' knife round is starting."
+        "ru" "{green}[DonutMatch]{white} Все игроки в сборе! Начинается ножевой раунд капитанов."
+    }
+    "MatchOver"
+    {
+        "en" "{green}[DonutMatch]{white} MATCH OVER!"
+        "ru" "{green}[DonutMatch]{white} МАТЧ ОКОНЧЕН!"
+    }
+    "FinalScoreNamed"
+    {
+        #format "{1:s},{2:d},{3:d},{4:s}"
+        "en" "{green}[DonutMatch]{white} Final score: {1} {olive}[{2}:{3}]{white} {4}"
+        "ru" "{green}[DonutMatch]{white} Итоговый счет: {1} {olive}[{2}:{3}]{white} {4}"
+    }
+    "TieOvertime"
+    {
+        "en" "{green}[DonutMatch]{white} TIE! Overtime is starting!"
+        "ru" "{green}[DonutMatch]{white} НИЧЬЯ! Начинается овертайм!"
+    }
+    "OvertimeVoteStarted"
+    {
+        "en" "{green}[DonutMatch]{white} The match is tied. Vote on whether to start overtime."
+        "ru" "{green}[DonutMatch]{white} Ничья. Проголосуйте, начинать ли овертайм."
+    }
+    "OvertimeVotePrompt"
+    {
+        "en" "Start overtime?"
+        "ru" "Начать овертайм?"
+    }
+    "OvertimeVoteRecorded"
+    {
+        "en" "{green}[DonutMatch]{white} Your vote has been counted."
+        "ru" "{green}[DonutMatch]{white} Ваш голос учтен."
+    }
+    "OvertimeVotePassed"
+    {
+        "en" "{green}[DonutMatch]{white} More than 60% voted for overtime. Starting overtime."
+        "ru" "{green}[DonutMatch]{white} Более 60% проголосовали за овертайм. Начинаем."
+    }
+    "OvertimeVoteFailed"
+    {
+        "en" "{green}[DonutMatch]{white} The overtime vote did not pass. The match is over."
+        "ru" "{green}[DonutMatch]{white} Голосование за овертайм не прошло. Матч завершен."
+    }
+    "OvertimeDisabled"
+    {
+        "en" "{green}[DonutMatch]{white} Overtime is disabled. The match ends in a tie."
+        "ru" "{green}[DonutMatch]{white} Овертайм отключен. Матч завершен вничью."
+    }
+    "OvertimeFinalRound"
+    {
+        "en" "{green}[DonutMatch]{white} Overtime is tied after both halves. Playing one final round."
+        "ru" "{green}[DonutMatch]{white} После двух половин овертайма ничья. Играем дополнительный решающий раунд."
+    }
+    "SameMap"
+    {
+        "en" "{green}[DonutMatch]{white} The same map was picked. A new Mix starts in 10 seconds."
+        "ru" "{green}[DonutMatch]{white} Та же карта выбрана снова. Новый Mix начнется через 10 секунд."
+    }
+    "MarkedReady"
+    {
+        "en" "{green}[DonutMatch]{white} You have been marked ready automatically."
+        "ru" "{green}[DonutMatch]{white} Ваша готовность отмечена автоматически."
+    }
+    "TypeReady"
+    {
+        "en" "{green}[DonutMatch]{white} Type !ready when you are ready to play."
+        "ru" "{green}[DonutMatch]{white} Напишите !ready, когда будете готовы к матчу."
+    }
+    "QueuedSpectator"
+    {
+        "en" "{green}[DonutMatch]{white} You are queued as a spectator. You will be assigned to a team when a slot opens."
+        "ru" "{green}[DonutMatch]{white} Вы в очереди наблюдателей. При освобождении места вас автоматически добавят в команду."
+    }
+    "AvailableCommand"
+    {
+        "en" "{green}[DonutMatch]{white} Available command: !info"
+        "ru" "{green}[DonutMatch]{white} Доступные команды - !info"
+    }
+    "AvailableCommands"
+    {
+        "en" "{green}[DonutMatch]{white} Available commands: !ready !r !knife !stay !info"
+        "ru" "{green}[DonutMatch]{white} Доступные команды - !ready !r !knife !stay !info"
+    }
+    "LeftSubstitution"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} left. The substitution was cancelled."
+        "ru" "{green}[DonutMatch]{white} Игрок {1} вышел. Замена отменена."
+    }
+    "TooFew"
+    {
+        "en" "Too few players remain on a team. The match has been cancelled."
+        "ru" "{green}[DonutMatch]{white} В команде осталось слишком мало игроков. Матч отменен."
+    }
+    "MixPlayers"
+    {
+        "en" "Mix players cannot change teams or switch to spectators after the draft."
+        "ru" "{green}[DonutMatch]{white} После драфта участники Mix не могут менять команду или уходить в наблюдатели."
+    }
+    "NoOpen"
+    {
+        "en" "There are no open slots yet. You remain in the spectator queue."
+        "ru" "{green}[DonutMatch]{white} Свободных мест пока нет. Вы остаетесь в очереди наблюдателей."
+    }
+    "MatchPlayers"
+    {
+        "en" "Match players cannot change teams."
+        "ru" "{green}[DonutMatch]{white} Участник матча не может менять команду."
+    }
+    "CannotJoin"
+    {
+        "en" "You cannot join a team during the match."
+        "ru" "{green}[DonutMatch]{white} Нельзя присоединиться к команде во время матча."
+    }
+    "ChangingTeams"
+    {
+        "en" "Changing teams during match setup is not allowed."
+        "ru" "{green}[DonutMatch]{white} Смена команды во время подготовки матча запрещена."
+    }
+    "CommandOnly"
+    {
+        "en" "This command is only available during the ready phase."
+        "ru" "{green}[DonutMatch]{white} Команда доступна только в системе готовности."
+    }
+    "PlayersMarked"
+    {
+        "en" "All players have been marked ready."
+        "ru" "{green}[DonutMatch]{white} Готовность всех игроков отмечена."
+    }
+    "PlayersMarkedNot"
+    {
+        "en" "All players have been marked not ready."
+        "ru" "{green}[DonutMatch]{white} Готовность всех игроков сброшена."
+    }
+    "PlayerReady"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} is ready!"
+        "ru" "{green}[DonutMatch]{white} {1} готов!"
+    }
+    "PlayerNotReady"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} is not ready."
+        "ru" "{green}[DonutMatch]{white} {1} не готов."
+    }
+    "ScoreNamed"
+    {
+        #format "{1:s},{2:d},{3:d},{4:s},{5:s}"
+        "en" "{green}[DonutMatch]{white} {1} {olive}[{2}:{3}]{white} {4}{5}"
+        "ru" "{green}[DonutMatch]{white} {1} {olive}[{2}:{3}]{white} {4}{5}"
+    }
+    "LastMatchNamed"
+    {
+        #format "{1:s},{2:d},{3:d},{4:s}"
+        "en" "{green}[DonutMatch]{white} Last match {1} {olive}[{2}:{3}]{white} {4}"
+        "ru" "{green}[DonutMatch]{white} Последний матч {1} {olive}[{2}:{3}]{white} {4}"
+    }
+    "NoActive"
+    {
+        "en" "{green}[DonutMatch]{white} There is no active or completed match."
+        "ru" "{green}[DonutMatch]{white} Активного или завершенного матча нет."
+    }
+    "NoMatches"
+    {
+        "en" "{green}[DonutMatch]{white} No matches have been completed yet."
+        "ru" "{green}[DonutMatch]{white} Завершенных матчей пока нет."
+    }
+    "LastMatchNamedMode"
+    {
+        #format "{1:s},{2:d},{3:d},{4:s},{5:d}"
+        "en" "{green}[DonutMatch]{white} Last match {1} {olive}[{2}:{3}]{white} {4} (mode {5})."
+        "ru" "{green}[DonutMatch]{white} Последний матч {1} {olive}[{2}:{3}]{white} {4} (режим {5})."
+    }
+    "DamageReports"
+    {
+        "en" "{green}[DonutMatch]{white} Damage reports are available during a live match."
+        "ru" "{green}[DonutMatch]{white} Отчет об уроне доступен во время live-матча."
+    }
+    "DamageHits"
+    {
+        #format "{1:s},{2:s},{3:d}"
+        "en" "Damage: you -> {1}: {2} ({3} hits)"
+        "ru" "Урон: вы -> {1}: {2} ({3} попад.)"
+    }
+    "DamageHits2"
+    {
+        #format "{1:s},{2:s},{3:d}"
+        "en" "Damage: {1} -> you: {2} ({3} hits)"
+        "ru" "Урон: {1} -> вы: {2} ({3} попад.)"
+    }
+    "DamageNo"
+    {
+        "en" "Damage: no hits have been recorded this round."
+        "ru" "Урон: в этом раунде попаданий пока нет."
+    }
+    "WeaponPurchases"
+    {
+        "en" "{green}[DonutMatch]{white} Weapon purchases are disabled during the knife round."
+        "ru" "{green}[DonutMatch]{white} Покупка оружия запрещена во время ножевого раунда."
+    }
+    "AutobuyRebuy"
+    {
+        "en" "{green}[DonutMatch]{white} Autobuy/rebuy are disabled before the match."
+        "ru" "{green}[DonutMatch]{white} Autobuy/rebuy отключены до начала матча."
+    }
+    "GrenadePurchases"
+    {
+        "en" "{green}[DonutMatch]{white} Grenade purchases are disabled before the match."
+        "ru" "{green}[DonutMatch]{white} Покупка гранат до начала матча отключена."
+    }
+    "NotPlaying"
+    {
+        "en" "{green}[DonutMatch]{white} You are not on a playing team."
+        "ru" "{green}[DonutMatch]{white} Вы не состоите в игровой команде."
+    }
+    "TeamMoneyNamed"
+    {
+        #format "{1:s}"
+        "en" "{1} team money:"
+        "ru" "Деньги команды {1}:"
+    }
+    "MatchNotLive"
+    {
+        "en" "{green}[DonutMatch]{white} Team money is available during a live match only."
+        "ru" "{green}[DonutMatch]{white} Деньги команды доступны только во время Live-матча."
+    }
+    "CommandOnlyUsed"
+    {
+        "en" "{green}[DonutMatch]{white} This command can only be used while waiting for players to ready up."
+        "ru" "{green}[DonutMatch]{white} Эту команду можно использовать только во время ожидания готовности."
+    }
+    "Ready"
+    {
+        #format "{1:s}"
+        "en" "[Ready] {1}"
+        "ru" "[Готов] {1}"
+    }
+    "NotReady"
+    {
+        #format "{1:s}"
+        "en" "[Not ready] {1}"
+        "ru" "[Не готов] {1}"
+    }
+    "StartingMatch"
+    {
+        "en" "{green}[DonutMatch]{white} Starting the match without a knife round."
+        "ru" "{green}[DonutMatch]{white} Запуск матча без ножевого раунда."
+    }
+    "OnlyWar"
+    {
+        "en" "{green}[DonutMatch]{white} Only the WAR captain can skip the knife round."
+        "ru" "{green}[DonutMatch]{white} Решить играть без ножевого раунда может только капитан WAR."
+    }
+    "CommandOnlyWorks"
+    {
+        "en" "{green}[DonutMatch]{white} This command only works in MIX mode."
+        "ru" "{green}[DonutMatch]{white} Эта команда работает только в режиме MIX."
+    }
+    "CommandOnlyWorksWar"
+    {
+        "en" "{green}[DonutMatch]{white} This command only works in WAR mode."
+        "ru" "{green}[DonutMatch]{white} Эта команда работает только в режиме WAR."
+    }
+    "MatchAlready"
+    {
+        "en" "{green}[DonutMatch]{white} The match has already started or is in another phase."
+        "ru" "{green}[DonutMatch]{white} Матч уже запущен или находится в другой стадии."
+    }
+    "RosterRequired"
+    {
+        #format "{1:d},{2:d},{3:d},{4:d}"
+        "en" "{green}[DonutMatch]{white} A {1}v{2} roster is required; current teams: T {3}, CT {4}."
+        "ru" "{green}[DonutMatch]{white} Нужен состав {1}v{2}; сейчас T: {3}, CT: {4}."
+    }
+    "AdminForce"
+    {
+        "en" "{green}[DonutMatch]{white} An admin force-started the MIX match!"
+        "ru" "{green}[DonutMatch]{white} Администратор принудительно запустил MIX матч!"
+    }
+    "AdminForceStarted"
+    {
+        "en" "{green}[DonutMatch]{white} An admin force-started the WAR match!"
+        "ru" "{green}[DonutMatch]{white} Администратор принудительно запустил WAR матч!"
+    }
+    "SubstitutionsOnly"
+    {
+        "en" "{green}[DonutMatch]{white} Substitutions are only available in MIX mode."
+        "ru" "{green}[DonutMatch]{white} Замены доступны только в режиме MIX."
+    }
+    "CommandOnlyUsedMatch"
+    {
+        "en" "{green}[DonutMatch]{white} This command can only be used during a match."
+        "ru" "{green}[DonutMatch]{white} Эту команду можно использовать только во время матча."
+    }
+    "NotPlayer"
+    {
+        "en" "{green}[DonutMatch]{white} You are not a player in the current match."
+        "ru" "{green}[DonutMatch]{white} Вы не являетесь участником текущего матча."
+    }
+    "RequestSubstitution"
+    {
+        "en" "{green}[DonutMatch]{white} You can request a substitution once every 10 seconds."
+        "ru" "{green}[DonutMatch]{white} Вы можете просить замену раз в 10 секунд."
+    }
+    "AlreadyActive"
+    {
+        "en" "{green}[DonutMatch]{white} You already have an active substitution request!"
+        "ru" "{green}[DonutMatch]{white} У вас уже есть активный запрос на замену!"
+    }
+    "NoSpectators"
+    {
+        "en" "{green}[DonutMatch]{white} There are no spectators available to substitute."
+        "ru" "{green}[DonutMatch]{white} В наблюдателях нет игроков для замены."
+    }
+    "SubstitutionRequest"
+    {
+        "en" "{green}[DonutMatch]{white} That substitution is no longer available."
+        "ru" "{green}[DonutMatch]{white} Эта замена больше недоступна."
+    }
+    "Accept"
+    {
+        "en" "Accept"
+        "ru" "Принять"
+    }
+    "Decline"
+    {
+        "en" "Decline"
+        "ru" "Отклонить"
+    }
+    "DeclinedSubstitution"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} declined the substitution and was kicked."
+        "ru" "{green}[DonutMatch]{white} Игрок {1} отказался от замены и был кикнут."
+    }
+    "NotRespond"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} did not respond to the substitution and was kicked."
+        "ru" "{green}[DonutMatch]{white} Игрок {1} не ответил на замену и был кикнут."
+    }
+    "MatchStarted"
+    {
+        "en" "{green}[DonutMatch]{white} MATCH STARTED! GL & HF!"
+        "ru" "{green}[DonutMatch]{white} МАТЧ НАЧАЛСЯ! GL & HF!"
+    }
+    "PlayersCaptains"
+    {
+        "en" "All players are here! The captains' knife round is starting."
+        "ru" "Все игроки на месте! Начинается ножевой раунд капитанов."
+    }
+    "PlayersReady"
+    {
+        "en" "All players are ready!"
+        "ru" "Все игроки готовы!"
+    }
+    "WaitingPlayer"
+    {
+        #format "{1:d}"
+        "en" "Waiting for {1} more player(s) to start"
+        "ru" "Не хватает игроков для старта: {1}"
+    }
+    "ExtraPlayersTeams"
+    {
+        #format "{1:d}"
+        "en" "There are {1} extra players on the teams"
+        "ru" "Лишних игроков в командах: {1}"
+    }
+    "BalanceTeams"
+    {
+        #format "{1:d},{2:d}"
+        "en" "Balance the teams to {1}v{2}"
+        "ru" "Распределите игроков поровну: {1}v{2}"
+    }
+    "PlayersWaiting"
+    {
+        "en" "All players are here! Waiting for ready confirmations..."
+        "ru" "Все игроки на месте! Ожидание готовности..."
+    }
+    "AndMore"
+    {
+        #format "{1:s},{2:d}"
+        "en" "{1} and {2} more..."
+        "ru" "{1} и еще {2}..."
+    }
+    "SecondHalf"
+    {
+        "en" "{green}[DonutMatch]{white} The second half is starting!"
+        "ru" "{green}[DonutMatch]{white} Вторая половина матча начинается!"
+    }
+    "ChoosePlayer"
+    {
+        "en" "Choose a player:"
+        "ru" "Выберите игрока:"
+    }
+    "TurnPick"
+    {
+        "en" "{green}[DonutMatch]{white} It is your turn to pick a player."
+        "ru" "{green}[DonutMatch]{white} Твоя очередь выбирать игрока."
+    }
+    "PlayerNo"
+    {
+        "en" "{green}[DonutMatch]{white} This player is no longer available to pick."
+        "ru" "{green}[DonutMatch]{white} Игрок больше не доступен для выбора."
+    }
+    "Picked"
+    {
+        #format "{1:s},{2:s}"
+        "en" "{green}[DonutMatch]{white} {1} picked {2}."
+        "ru" "{green}[DonutMatch]{white} {1} выбрал игрока {2}."
+    }
+    "DraftComplete"
+    {
+        "en" "{green}[DonutMatch]{white} The draft is complete. Waiting for any missing players and assigning them automatically."
+        "ru" "{green}[DonutMatch]{white} Выбор завершен. Ожидаем недостающих игроков и распределяем их автоматически."
+    }
+    "ReadyPrompt"
+    {
+        "en" "Are you ready?"
+        "ru" "Вы готовы?"
+    }
+    "TeamNameChanged"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} Team name changed to {1}."
+        "ru" "{green}[DonutMatch]{white} Название команды изменено на {1}."
+    }
+    "TeamNameUsage"
+    {
+        "en" "{green}[DonutMatch]{white} Usage: !teamname <name>"
+        "ru" "{green}[DonutMatch]{white} Использование: !teamname <название>"
+    }
+    "TeamNameCaptainOnly"
+    {
+        "en" "{green}[DonutMatch]{white} Only your team's captain can change its name."
+        "ru" "{green}[DonutMatch]{white} Изменить название команды может только ее капитан."
+    }
+    "TeamNameMixOnly"
+    {
+        "en" "{green}[DonutMatch]{white} Team names can only be set by captains during a Mix."
+        "ru" "{green}[DonutMatch]{white} Названия команд могут менять капитаны только в режиме Mix."
+    }
+    "TeamNameTooLong"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} The team name can be at most {1} bytes long."
+        "ru" "{green}[DonutMatch]{white} Название команды должно быть не длиннее {1} байт."
+    }
+    "ReadyKick"
+    {
+        "en" "You were kicked because you did not confirm readiness in time."
+        "ru" "Вы были исключены за то, что не подтвердили готовность вовремя."
+    }
+    "Yes"
+    {
+        "en" "Yes"
+        "ru" "Да"
+    }
+    "No"
+    {
+        "en" "No"
+        "ru" "Нет"
+    }
+    "ConfirmReadiness"
+    {
+        "en" "{green}[DonutMatch]{white} You can confirm your readiness later with !ready or !r."
+        "ru" "{green}[DonutMatch]{white} Вы можете подтвердить готовность позже командой !ready или !r."
+    }
+    "PlayTerrorists"
+    {
+        "en" "Play as Terrorists (T)"
+        "ru" "Играть за Террористов (T)"
+    }
+    "PlayCounter"
+    {
+        "en" "Play as Counter-Terrorists (CT)"
+        "ru" "Играть за Спецназ (CT)"
+    }
+    "SidesSwitched"
+    {
+        "en" "{green}[DonutMatch]{white} The teams have switched sides."
+        "ru" "{green}[DonutMatch]{white} Команды были поменяны местами."
+    }
+    "ChoseStart"
+    {
+        #format "{1:s},{2:s}"
+        "en" "{green}[DonutMatch]{white} {1} chose to start as {2}."
+        "ru" "{green}[DonutMatch]{white} {1} выбрал начать игру за {2}."
+    }
+    "WonKnife"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} won the knife round and gets the first pick!"
+        "ru" "{green}[DonutMatch]{white} {1} победил в ножевом раунде и выбирает первым!"
+    }
+    "CaptainsKnife"
+    {
+        "en" "{green}[DonutMatch]{white} The captains' knife round ended in a tie. Restarting."
+        "ru" "{green}[DonutMatch]{white} Ничья в ножевом раунде капитанов. Переигровка."
+    }
+    "KnifeRound"
+    {
+        "en" "{green}[DonutMatch]{white} The knife round ended in a tie. Restarting."
+        "ru" "{green}[DonutMatch]{white} Ничья в ножевом раунде. Переигровка."
+    }
+    "KnifeTeamWon"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} The {1} team won the knife round!"
+        "ru" "{green}[DonutMatch]{white} Команда {1} победила в ножевом раунде!"
+    }
+    "ChoosingStarting"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} {1} is choosing the starting side."
+        "ru" "{green}[DonutMatch]{white} {1} выбирает стартовую сторону."
+    }
+    "OvertimeSide"
+    {
+        "en" "{green}[DonutMatch]{white} Overtime side switch!"
+        "ru" "{green}[DonutMatch]{white} Смена сторон в овертайме!"
+    }
+    "AnotherTie"
+    {
+        "en" "{green}[DonutMatch]{white} Another tie! A second overtime is starting!"
+        "ru" "{green}[DonutMatch]{white} Снова ничья! Начинается второй овертайм!"
+    }
+    "SwitchingSides"
+    {
+        "en" "{green}[DonutMatch]{white} Switching sides!"
+        "ru" "{green}[DonutMatch]{white} Смена сторон!"
+    }
+    "AutomaticallyAddedTeam"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} You were automatically added to team {1}. Type !ready."
+        "ru" "{green}[DonutMatch]{white} Вы автоматически добавлены в команду {1}. Напишите !ready."
+    }
+    "VoteNew"
+    {
+        "en" "{green}[DonutMatch]{white} The vote is over. A new Mix starts in 10 seconds if the map stays the same."
+        "ru" "{green}[DonutMatch]{white} Голосование завершено. Новый Mix начнется через 10 секунд, если карта останется прежней."
+    }
+    "MapVote"
+    {
+        "en" "{green}[DonutMatch]{white} A map vote is already in progress. Waiting for its result."
+        "ru" "{green}[DonutMatch]{white} Голосование за карту уже идет. Ожидаем его результат."
+    }
+    "VoteAlready"
+    {
+        "en" "{green}[DonutMatch]{white} A vote is already in progress or has finished!"
+        "ru" "{green}[DonutMatch]{white} Голосование уже идет или завершено!"
+    }
+    "NextMap"
+    {
+        "en" "{green}[DonutMatch]{white} The next-map vote has started!"
+        "ru" "{green}[DonutMatch]{white} Запущено голосование за следующую карту!"
+    }
+    "VoteNext"
+    {
+        "en" "{green}[DonutMatch]{white} Vote for the next map!"
+        "ru" "{green}[DonutMatch]{white} Голосуйте за следующую карту!"
+    }
+    "WarCaptain"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} WAR captain: {1}."
+        "ru" "{green}[DonutMatch]{white} Капитан WAR: {1}."
+    }
+    "EveryoneReady"
+    {
+        "en" "{green}[DonutMatch]{white} Everyone is ready!"
+        "ru" "{green}[DonutMatch]{white} Все готовы!"
+    }
+    "TypeKnife"
+    {
+        "en" "{green}[DonutMatch]{white} Type !knife to play a side-pick knife round or !stay to start the match."
+        "ru" "{green}[DonutMatch]{white} Напишите !knife для игры за сторону или !stay для начала матча."
+    }
+    "KnifeSidePick"
+    {
+        #format "{1:d},{2:d}"
+        "en" "{green}[DonutMatch]{white} A {1}v{2} knife round for side selection is starting!"
+        "ru" "{green}[DonutMatch]{white} Начинается ножевой раунд {1}v{2} за выбор стороны!"
+    }
+    "ReadyStatusN"
+    {
+        "en" "DonutMatch: Ready status\n!ready - toggle your ready status (ready/not ready)\n-------------------------------------------------------"
+        "ru" "DonutMatch: Статус готовности\n!ready - команда готовности (готов/не готов)\n-------------------------------------------------------"
+    }
+    "ChooseSubstitute"
+    {
+        "en" "Choose a substitute:\n--------------------------------"
+        "ru" "Выберите игрока для замены:\n--------------------------------"
+    }
+    "OfferedSubstitutionN2"
+    {
+        #format "{1:s}"
+        "en" "{1} offered you a substitution.\n--------------------------------"
+        "ru" "{1} предлагает вам замену.\n--------------------------------"
+    }
+    "TeamWonNchoose"
+    {
+        "en" "Your team won!\nChoose your starting side:\n--------------------------------"
+        "ru" "Ваша команда победила!\nВыберите стартовую сторону:\n--------------------------------"
+    }
+    "Terrorists"
+    {
+        "en" "Terrorists"
+        "ru" "Террористов"
+    }
+    "TerroristsName"
+    {
+        "en" "Terrorists"
+        "ru" "Террористы"
+    }
+    "CounterTerrorists"
+    {
+        "en" "Counter-Terrorists"
+        "ru" "Спецназ"
+    }
+    "CounterTerroristsName"
+    {
+        "en" "Counter-Terrorists"
+        "ru" "Спецназа"
+    }
+    "Reset_MatchFinished"
+    {
+        "en" "Match finished."
+        "ru" "Матч завершен."
+    }
+    "Reset_MapChange"
+    {
+        "en" "Map change."
+        "ru" "Смена карты."
+    }
+    "Reset_RosterChanged"
+    {
+        "en" "The team roster changed before the match started."
+        "ru" "Состав команд изменился перед запуском."
+    }
+    "Reset_NoCaptains"
+    {
+        "en" "Not enough players to select captains."
+        "ru" "Недостаточно игроков для выбора капитанов."
+    }
+    "Reset_CaptainLeft"
+    {
+        "en" "A captain left during setup."
+        "ru" "Капитан покинул подготовку."
+    }
+    "Reset_PlayerLeft"
+    {
+        "en" "A player left during match setup."
+        "ru" "Игрок покинул подготовку к матчу."
+    }
+    "Reset_UnknownTeam"
+    {
+        "en" "Could not determine the team of the player who left."
+        "ru" "Не удалось определить команду вышедшего игрока."
+    }
+    "Reset_TooFewPlayers"
+    {
+        "en" "Not enough players to continue."
+        "ru" "Недостаточно игроков для продолжения."
+    }
+    "Reset_TooFewToContinue"
+    {
+        "en" "Not enough players to continue the match."
+        "ru" "Недостаточно игроков для продолжения матча."
+    }
+    "Reset_SettingsChanged"
+    {
+        "en" "Match settings have changed."
+        "ru" "Настройки матча были изменены."
+    }
+    "Reset_CaptainSpawnFailed"
+    {
+        "en" "A captain did not spawn after several attempts."
+        "ru" "Капитан не появился после нескольких попыток."
+    }
+    "Reset_KnifeSetupFailed"
+    {
+        "en" "Could not prepare the captains' knife round."
+        "ru" "Не удалось подготовить ножевой раунд капитанов."
+    }
+    "Reset_PickCancelled"
+    {
+        "en" "Player selection was cancelled."
+        "ru" "Выбор игрока отменен."
+    }
+    "Reset_SidePickCancelled"
+    {
+        "en" "Side selection was cancelled."
+        "ru" "Выбор стороны отменен."
+    }
+    "Reset_NoWinner"
+    {
+        "en" "No players remain on the winning team."
+        "ru" "В команде-победителе не осталось игроков."
+    }
+    "NotReady3"
+    {
+        #format "{1:s}"
+        "en" "Not ready: {1}"
+        "ru" "Не готовы: {1}"
+    }
+    "SubstitutionRequestNo"
+    {
+        "en" "{green}[DonutMatch]{white} This substitution request is no longer valid."
+        "ru" "{green}[DonutMatch]{white} Запрос на замену уже не актуален."
+    }
+    "TeammateMoney"
+    {
+        #format "{1:s},{2:d}"
+        "en" "{1}: ${2}"
+        "ru" "{1}: ${2}"
+    }
+}
