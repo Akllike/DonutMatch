@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#19baf3">
+  <meta name="description" content="DonutMatch — система организации Mix и War матчей для Counter-Strike: Source.">
+  <title>DonutMatch — система матчей Mix и War для CS:S</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900;1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="DonutMatch — на главную"><span class="brand-mark">D</span><span>Donut<span class="brand-pink">Match</span></span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Меню <span>☰</span></button>
+    <nav id="main-nav" aria-label="Главная навигация">
+      <a href="#about">О плагине</a><a href="#how">Как играть</a><a href="#install">Установка</a><a href="#start">GitHub</a>
+    </nav>
+    <a class="nav-cta" href="#start">В бой <span>↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-image" role="img" aria-label="Пончик-боец на яркой карте DonutMatch"></div>
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <div class="eyebrow"><span class="live-dot"></span> COUNTER-STRIKE: SOURCE</div>
+        <h1 id="hero-title">Матч<br><span>под</span><br>контролем.</h1>
+        <p class="hero-lead">DonutMatch — система организации Mix и War матчей для CS:S. От готовности игроков и выбора состава до финального счёта.</p>
+        <div class="hero-actions"><a class="button button-pink" href="https://github.com/Akllike/DonutMatch">Смотреть на GitHub <span>↗</span></a><a class="play-link" href="#about"><span class="play-icon">↓</span> Изучить возможности</a></div>
+      </div>
+      <div class="hero-sticker sticker-top"><span>🍩</span> MIX<br>&amp; WAR</div>
+      <div class="hero-sticker sticker-bottom"><b>5 × 5</b><br>ФОРМАТ<br>МАТЧА</div>
+      <a href="#about" class="scroll-cue" aria-label="Прокрутить вниз">⌄</a>
+    </section>
+
+    <section class="ticker" aria-label="Слоган"><div>СМОТРИ <i>✦</i> БОЛЕЙ <i>✦</i> ВЛИЯЙ НА ИГРУ <i>✦</i> СМОТРИ <i>✦</i> БОЛЕЙ <i>✦</i> ВЛИЯЙ НА ИГРУ <i>✦</i></div></section>
+
+    <section class="intro section-wrap reveal" id="about">
+      <div class="section-kicker">ПОЛНЫЙ ЦИКЛ МАТЧА В ОДНОМ ПЛАГИНЕ</div>
+      <div class="intro-grid"><h2>От ready-up<br>до <span>результата.</span></h2><div class="intro-copy"><p>DonutMatch автоматизирует подготовку и проведение матчей на сервере Counter-Strike: Source. Игроки отмечают готовность, команды собираются, матч проходит свои игровые фазы, а счёт и события сохраняются для истории.</p><a class="text-link" href="https://github.com/Akllike/DonutMatch#возможности">Все возможности в README <span>↗</span></a></div></div>
+    </section>
+
+    <section class="features section-wrap reveal" id="how">
+      <div class="feature-heading"><div><div class="section-kicker">ДВА ФОРМАТА · ЕДИНАЯ СИСТЕМА</div><h2>Собирай состав.<br>Запускай <span>матч.</span></h2></div><p>Mix для набора игроков на сервере. War для готовых составов, которые пришли играть.</p></div>
+      <div class="feature-grid">
+        <article class="feature-card card-blue"><div class="feature-icon">🧢</div><span class="feature-number">01 / MIX</span><h3>Капитаны и пики</h3><p>Ready-система собирает игроков. Затем ножевой раунд, выбор капитанов и поочерёдный набор в команды.</p><span class="card-spark">✦</span></article>
+        <article class="feature-card card-pink"><div class="feature-icon">🔪</div><span class="feature-number">02 / WAR</span><h3>Готовые составы</h3><p>Начните War с ножевого раунда для выбора стороны или сразу переходите к Live-матчу.</p><span class="card-spark">✦</span></article>
+        <article class="feature-card card-yellow"><div class="feature-icon">🏆</div><span class="feature-number">03 / LIVE</span><h3>Счёт до финала</h3><p>Смена сторон, овертайм, сохранение статистики половин и итоговый результат матча.</p><span class="card-spark">✦</span></article>
+      </div>
+    </section>
+
+    <section class="details section-wrap reveal">
+      <div class="section-kicker">ИНСТРУМЕНТЫ ДЛЯ ИГРОКОВ И АДМИНОВ</div>
+      <div class="details-grid">
+        <div><h2>Нужная<br><span>информация.</span></h2><p>Готовность игроков, текущий и последний счёт, урон и деньги команды доступны прямо в игре.</p></div>
+        <div class="command-list"><div><code>!ready</code><span>Отметиться готовым</span></div><div><code>!info</code><span>Посмотреть готовность</span></div><div><code>!score</code><span>Узнать текущий счёт</span></div><div><code>!damage</code><span>Проверить урон и попадания</span></div><div><code>!ask</code><span>Запросить замену в Mix</span></div></div>
+      </div>
+      <div class="extras"><span>SourceTV демо</span><span>JSONL-журнал матчей</span><span>Опциональная база данных</span><span>Natives и forwards API</span><span>Конфиги игровых фаз</span></div>
+    </section>
+
+    <section class="install section-wrap reveal" id="install">
+      <div class="install-heading"><div class="section-kicker">БЫСТРЫЙ СТАРТ</div><h2>Установка<br><span>DonutMatch.</span></h2><p>Подготовьте файлы плагина на сервере и перезапустите его, чтобы начать матч.</p></div>
+      <ol class="install-steps">
+        <li><span class="step-index">01</span><div><h3>Установите плагин</h3><p>Поместите предоставленный <code>donut_match.smx</code> в <code>addons/sourcemod/plugins/</code>.</p></div></li>
+        <li><span class="step-index">02</span><div><h3>Добавьте зависимости</h3><p>Установите необходимые runtime-зависимости, перечисленные в README проекта.</p></div></li>
+        <li><span class="step-index">03</span><div><h3>Скопируйте файл переводов</h3><p>Поместите <code>donut_match.phrases.txt</code> в <code>addons/sourcemod/translations/</code>.</p></div></li>
+        <li><span class="step-index">04</span><div><h3>Разместите конфиги фаз</h3><p>Скопируйте конфиги в каталог <code>cfg/donutmatch/</code>.</p></div></li>
+        <li><span class="step-index">05</span><div><h3>Перезапустите и проверьте</h3><p>Перезапустите плагин или сервер и проверьте журнал SourceMod.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="cta-section" id="start"><div class="cta-donut">🍩</div><div class="cta-content"><div class="section-kicker">ГОТОВ К МАТЧУ?</div><h2>Твой сервер.<br><span>Твои правила.</span></h2><p>Настрой режим Mix или War и проведи следующий матч с DonutMatch.</p><a class="button button-dark" href="https://github.com/Akllike/DonutMatch">Открыть репозиторий <span>↗</span></a><small>Требуется SourceMod 1.11. Совместимость: CS:S и CS:S v34. Проверь runtime-зависимости и инструкции в README.</small></div><div class="cta-burst">READY<br>UP!</div></section>
+  </main>
+  <footer><a class="brand" href="#top"><span class="brand-mark">D</span><span>Donut<span class="brand-pink">Match</span></span></a><span>Система Mix &amp; War матчей для Counter-Strike: Source.</span><a href="https://github.com/Akllike/DonutMatch">GitHub ↗</a></footer>
+  <script src="app.js" defer></script>
+</body>
+</html>
