@@ -5,15 +5,16 @@
 
 #include <sdktools>
 
+/** Режим, в котором проводится матч. */
 enum GameMode
 {
-    MODE_NONE,
-    MODE_MIX,
-    MODE_WAR
+    MODE_NONE, /**< Режим не задан или матч ещё не начался. */
+    MODE_MIX,  /**< Смешанный режим с набором игроков и драфтом. */
+    MODE_WAR   /**< Заранее сформированные команды (War). */
 };
 
 /**
- * Состояния матча
+ * Текущее состояние системы матча.
  */
 enum MatchState
 {
@@ -29,44 +30,52 @@ enum MatchState
     State_MapRestartDelay   /**< Перезапуск Mix задержан после выбора той же карты */
 };
 
+enum MatchDatabaseStatus
+{
+    MatchDatabase_Disabled = 0, /**< Запись в базу отключена настройками. */
+    MatchDatabase_Connecting,   /**< Плагин устанавливает соединение с базой. */
+    MatchDatabase_Ready,        /**< База доступна для записи результатов. */
+    MatchDatabase_Unavailable   /**< Соединение не удалось или база недоступна. */
+};
+
 /**
- * Вызывается, когда статус готовности меняется у игрока, находящегося в игре.
- * Для ботов и очистки статуса при отключении callback не отправляется.
+ * Вызывается, когда меняется статус готовности подключённого игрока-человека.
+ * Для ботов и при очистке статуса во время отключения вызов не отправляется.
  *
  * @param client        Индекс игрока
- * @param ready         true - готов, false - не готов
+ * @param ready         true — игрок готов; false — не готов.
  */
 forward void DonutMatch_OnPlayerReady(int client, bool ready);
 
 /**
- * Вызывается при обновлении счета раунда
+ * Вызывается после обновления счёта раунда.
  *
- * @param scoreT        Счет террористов
- * @param scoreCT       Счет спецназа  
- * @param winnerTeam    Победившая команда (2 = T, 3 = CT)
+ * @param scoreT        Текущий счёт террористов.
+ * @param scoreCT       Текущий счёт спецназа.
+ * @param winnerTeam    Номер победившей команды: 2 — террористы, 3 — спецназ.
  */
 forward void DonutMatch_OnRoundScore(int scoreT, int scoreCT, int winnerTeam);
 
 /**
- * Вызывается при начале матча
+ * Вызывается при начале матча.
  *
- * @param data          Массив: [mode, playerCount, players[MAXPLAYERS], teams[MAXPLAYERS]].
- *                      Индексы игроков начинаются с data[2], команды - с data[2 + MAXPLAYERS].
- * @param dataSize      Размер массива: 2 + MAXPLAYERS * 2
+ * @param data          Массив: [режим, число игроков, индексы игроков[MAXPLAYERS], команды[MAXPLAYERS]].
+ *                      Индексы игроков начинаются с data[2], команды — с data[2 + MAXPLAYERS].
+ * @param dataSize      Размер массива в ячейках: 2 + MAXPLAYERS * 2.
  */
 forward void DonutMatch_OnMatchStart(const any[] data, int dataSize);
 
 /**
- * Вызывается при окончании матча
+ * Вызывается при завершении матча.
  *
- * @param data          Массив данных о результате [mode, scoreT, scoreCT]
- * @param dataSize      Размер массива данных  
+ * @param data          Массив результата: [режим, счёт террористов, счёт спецназа].
+ * @param dataSize      Размер массива: 3 ячейки.
  */
 forward void DonutMatch_OnMatchEnd(const any[] data, int dataSize);
 
 /**
- * Вызывается при Reset матча, если до сброса система была не в State_ReadySystem.
- * Не заменяет DonutMatch_OnMatchEnd и может вызываться при отмене/сбросе матча.
+ * Вызывается при сбросе матча, если до сброса система находилась не в State_ReadySystem.
+ * Не заменяет DonutMatch_OnMatchEnd: может вызываться при отмене или принудительном сбросе матча.
  *
  * @param reason        Причина сброса
  */
@@ -75,8 +84,8 @@ forward void DonutMatch_OnMatchReset(const char[] reason);
 /**
  * Вызывается после 15-го раунда основного времени перед сменой сторон.
  *
- * @param scoreT        Счёт T перед сменой сторон
- * @param scoreCT       Счёт CT перед сменой сторон
+ * @param scoreT        Счёт террористов перед сменой сторон.
+ * @param scoreCT       Счёт спецназа перед сменой сторон.
  */
 forward void DonutMatch_OnHalfTime(int scoreT, int scoreCT);
 
@@ -98,8 +107,8 @@ forward void DonutMatch_OnOvertime();
  * @param players       Массив индексов активных игроков состава
  * @param playerCount   Количество игроков в массиве
  * @param overtime      true для перерыва овертайма, false для основного времени
- * @param scoreT        Счет сторон до смены сторон
- * @param scoreCT       Счет сторон до смены сторон
+ * @param scoreT        Счёт террористов перед сменой сторон.
+ * @param scoreCT       Счёт спецназа перед сменой сторон.
  */
 forward void DonutMatch_OnMatchHalfTime(GameMode mode, const int[] players, int playerCount, bool overtime, int scoreT, int scoreCT);
 
@@ -120,150 +129,533 @@ forward Action DonutMatch_OnPlayerReplacePre(int client, int target);
  */
 forward void DonutMatch_OnPlayerReplacePost(int client, int target);
 
-
-/**
- * Проверяет идет ли сейчас матч (включая овертайм)
- *
- * @return              true если матч идет или в овертайме, false если нет
+/** 
+ * Вызывается при переходе матча в другое состояние.
+ * 
+ * @param oldState Предыдущее состояние.
+ * @param newState Новое состояние.
  */
-native bool DonutMatch_IsMatchLive();
+forward void DonutMatch_OnStateChanged(MatchState oldState, MatchState newState);
 
-/**
- * Получает текущее состояние матча
- *
- * @return              Текущее состояние MatchState
+/** 
+ * Вызывается при изменении счёта, в том числе при смене сторон или сбросе.
+ * 
+ * @param scoreT Текущий счёт команды террористов.
+ * @param scoreCT Текущий счёт команды спецназа.
  */
-native MatchState DonutMatch_GetMatchState();
+forward void DonutMatch_OnScoreChanged(int scoreT, int scoreCT);
 
 /**
- * Получает текущий режим игры
+ * Вызывается после полной смены сторон команд T и CT.
+ * К этому моменту игроки, счёт, названия команд и свободные слоты замен уже обновлены.
  *
- * @return              Текущий режим GameMode  
+ * @param scoreT  Текущий счёт команды T после смены сторон.
+ * @param scoreCT Текущий счёт команды CT после смены сторон.
  */
-native GameMode DonutMatch_GetGameMode();
+forward void DonutMatch_OnTeamsSwapped(int scoreT, int scoreCT);
+
+/** 
+ * Вызывается, когда игрок добавлен в состав или исключён из него.
+ * 
+ * @param client Индекс игрока.
+ * @param team Команда игрока после изменения: 2 — террористы, 3 — спецназ, 0 — игрок исключён.
+ * @param added true, если игрок добавлен; false, если исключён.
+ */
+forward void DonutMatch_OnRosterChanged(int client, int team, bool added);
+
+/** 
+ * Вызывается после изменения отображаемого названия команды.
+ * 
+ * @param team Команда: 2 — террористы, 3 — спецназ.
+ * @param name Новое название команды.
+ * @param actor Индекс капитана, изменившего название.
+ */
+forward void DonutMatch_OnTeamNameChanged(int team, const char[] name, int actor);
+
+/** 
+ * Вызывается после успешного выбора игрока в драфте Mix.
+ * 
+ * @param picker Индекс капитана, сделавшего выбор.
+ * @param picked Индекс выбранного игрока.
+ * @param team Команда, в которую добавлен игрок: 2 — террористы, 3 — спецназ.
+ */
+forward void DonutMatch_OnDraftPick(int picker, int picked, int team);
+
+/** 
+ * Вызывается после завершения голосования за овертайм.
+ * 
+ * @param yesVotes Количество голосов «Да».
+ * @param noVotes Количество голосов «Нет».
+ * @param eligibleVotes Количество игроков, допущенных к голосованию.
+ * @param passed true, если порог голосов за овертайм достигнут.
+ */
+forward void DonutMatch_OnOvertimeVoteFinished(int yesVotes, int noVotes, int eligibleVotes, bool passed);
+
+/** 
+ * Вызывается для каждой сформированной записи журнала JSONL.
+ * 
+ * @param eventName Название события.
+ * @param timestamp Время события в Unix-формате.
+ * @param fields Фрагмент JSON с полями события.
+ */
+forward void DonutMatch_OnLogEvent(const char[] eventName, int timestamp, const char[] fields);
+
+/** 
+ * Вызывается после успешного сохранения результата матча в SQL-базе.
+ * 
+ * @param map Название карты.
+ * @param mode Режим завершённого матча.
+ * @param playersPerSide Количество игроков в каждой команде.
+ * @param scoreT Итоговый счёт террористов.
+ * @param scoreCT Итоговый счёт спецназа.
+ * @param durationSeconds Длительность матча в секундах.
+ * @param playedAt Время начала матча в Unix-формате.
+ */
+forward void DonutMatch_OnDatabaseResultSaved(const char[] map, GameMode mode, int playersPerSide,
+    int scoreT, int scoreCT, int durationSeconds, int playedAt);
+
+
+/** Главный интерфейс для получения состояния и управления матчем DonutMatch. */
+methodmap DonutMatch < Handle
+{
+    /** 
+     * Создаёт интерфейс главного объекта плагина.
+     * 
+     * @return Объект доступа к текущему матчу.
+     */
+    public DonutMatch() { return view_as<DonutMatch>(0); }
+    /** 
+     * Проверяет, идёт ли сейчас игровой матч.
+     * 
+     * @return true, если матч находится в игровом состоянии.
+     */
+    public native bool IsLive();
+    /** 
+     * Возвращает состояние системы матча.
+     * 
+     * @return Текущее значение MatchState.
+     */
+    public native MatchState State();
+    /** 
+     * Возвращает выбранный режим системы матча.
+     * 
+     * @return Значение GameMode; MODE_NONE, если режим не задан.
+     */
+    public native GameMode Mode();
+    /** 
+     * Проверяет готовность игрока.
+     * 
+     * @param client Индекс подключённого игрока.
+     * @return true, если игрок отметил готовность.
+     */
+    public native bool IsReady(int client);
+    /** 
+     * Устанавливает готовность игрока.
+     * 
+     * @param client Индекс подключённого игрока.
+     * @param ready Новое состояние готовности.
+     * @return true, если состояние принято; иначе false.
+     * @note После изменения проверяет, можно ли перейти к следующему этапу подготовки или начать матч.
+     */
+    public native bool SetReady(int client, bool ready);
+    /** 
+     * Получает текущий счёт матча.
+     * 
+     * @param scoreT На выходе — счёт террористов.
+     * @param scoreCT На выходе — счёт спецназа.
+     */
+    public native void GetScore(int &scoreT, int &scoreCT);
+    /** 
+     * Немедленно запускает подготовку матча, если состав и состояние позволяют это.
+     * 
+     * @return true, если запуск принят; иначе false.
+     * @note Готовность игроков при этом принудительном запуске не проверяется.
+     */
+    public native bool Start();
+    /** 
+     * Останавливает текущий матч и сбрасывает его состояние.
+     * 
+     * @param reason Причина остановки, передаваемая в событие сброса.
+     * @return true после выполнения сброса состояния матча.
+     */
+    public native bool Stop(const char[] reason);
+    /**
+     * Меняет местами всех игроков команд T и CT и переставляет счёт и названия команд.
+     *
+     * @return true, если стороны переключены; false, если сейчас активен выбор игроков
+     *         или матч находится в состоянии голосования/перезапуска карты.
+     */
+    public native bool SwapTeams();
+    /** 
+     * Возвращает установленный размер одной команды.
+     * 
+     * @return Число игроков в команде.
+     */
+    public native int PlayersPerSide();
+    /** 
+     * Создаёт копию списка участников текущего состава.
+     
+     * @return Список индексов игроков; вызывающий код должен вызвать Delete().
+     */
+    public native ArrayList LivePlayers();
+    /** 
+     * Проверяет, входит ли игрок в подготовленный или активный состав матча.
+     * 
+     * @param client Индекс игрока.
+     * @return true, если игрок входит в состав.
+     */
+    public native bool IsPlayerInMatch(int client);
+    /** 
+     * Получает индекс капитана указанной команды.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @return Индекс капитана или 0, если капитан не назначен.
+     */
+    public native int Captain(int team);
+    /** 
+     * Возвращает число раундов в матче или овертайме.
+     * 
+     * @param overtime true — запросить число раундов овертайма.
+     * @return Число раундов для выбранного этапа.
+     */
+    public native int MaxRounds(bool overtime = false);
+    /** 
+     * Возвращает счёт команды на перерыве указанного этапа.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @param overtime true — запросить счёт на перерыве овертайма.
+     * @return Сохранённый счёт команды на перерыве.
+     */
+    public native int HalftimeScore(int team, bool overtime = false);
+    /** 
+     * Копирует название команды в буфер.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @param buffer Буфер, в который будет записано название.
+     * @param size Размер буфера в ячейках.
+     * @return true при успешном копировании; иначе false.
+     */
+    public native bool TeamName(int team, char[] buffer, int size);
+    /** 
+     * Изменяет отображаемое название команды.
+     * 
+     * @param actor Индекс игрока, выполняющего изменение.
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @param name Новое название.
+     * @return true, если название изменено; иначе false.
+     * @note Изменять название может только действующий капитан этой команды.
+     */
+    public native bool SetTeamName(int actor, int team, const char[] name);
+    /** 
+     * Возвращает текущий счёт указанной команды.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @return Счёт команды.
+     */
+    public native int TeamScore(int team);
+    /** 
+     * Создаёт копию списка подключённых игроков указанной команды.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @return Список индексов игроков; вызывающий код должен вызвать Delete().
+     */
+    public native ArrayList TeamPlayers(int team);
+    /** 
+     * Создаёт копию очереди подключённых игроков-людей вне активного состава.
+     * 
+     * @return Список индексов игроков; вызывающий код должен вызвать Delete().
+     */
+    public native ArrayList QueuedPlayers();
+    /** 
+     * Возвращает число свободных мест в команде.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @return Число свободных мест, не меньше нуля.
+     */
+    public native int OpenSlots(int team);
+    /** 
+     * Возвращает число игроков, которых не хватает до состава для старта.
+     * 
+     * @return Недостающее число игроков; 0, если нужное количество уже набрано.
+     */
+    public native int MissingPlayersToStart();
+    /** 
+     * Проверяет, можно ли запустить матч в текущем состоянии и с текущим составом.
+     * 
+     * @return true, если запуск возможен прямо сейчас.
+     * @note Готовность игроков не учитывается; метод проверки не запускает матч.
+     */
+    public native bool CanStart();
+    /** 
+     * Получает текущее состояние голосования за овертайм.
+     * 
+     * @param yesVotes На выходе — количество голосов «Да».
+     * @param noVotes На выходе — количество голосов «Нет».
+     * @param eligibleVotes На выходе — число допущенных к голосованию игроков.
+     * @return true, если голосование активно; иначе false. Счётчики заполняются в любом случае.
+     */
+    public native bool GetOvertimeVote(int &yesVotes, int &noVotes, int &eligibleVotes);
+    /** 
+     * Запускает предусмотренную настройками процедуру овертайма при равном счёте.
+     * 
+     * @return true, если запуск овертайма или голосования принят; иначе false.
+     */
+    public native bool StartOvertime();
+    /** 
+     * Возвращает состояние соединения с базой результатов.
+     * 
+     * @return Значение MatchDatabaseStatus.
+     */
+    public native MatchDatabaseStatus DatabaseStatus();
+    /** 
+     * Добавляет пользовательское событие в журнал JSONL и вызывает соответствующий форвард.
+     * 
+     * @param source Источник события.
+     * @param eventName Название события.
+     * @param payload Данные события в виде строки; строка корректно экранируется.
+     * @return true, если событие принято системой журнала.
+     */
+    public native bool LogEvent(const char[] source, const char[] eventName, const char[] payload);
+    /** 
+     * Проверяет, сохранены ли данные последнего матча.
+     * 
+     * @return true, если доступны сведения о последнем матче.
+     */
+    public native bool HasLastMatch();
+    /** 
+     * Получает режим последнего матча.
+     * 
+     * @return Значение GameMode последнего матча.
+     */
+    public native GameMode LastMatchMode();
+    /** 
+     * Получает итоговый счёт последнего матча.
+     * 
+     * @param scoreT На выходе — счёт террористов.
+     * @param scoreCT На выходе — счёт спецназа.
+     * @note Если завершённого матча ещё не было, оба значения равны 0; проверяйте HasLastMatch().
+     */
+    public native void GetLastMatchScore(int &scoreT, int &scoreCT);
+    /** 
+     * Копирует название команды последнего матча в буфер.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @param buffer Буфер для названия.
+     * @param size Размер буфера в ячейках.
+     * @return true при успешном копировании; иначе false.
+     */
+    public native bool LastTeamName(int team, char[] buffer, int size);
+};
+
+/** Объект для управления конкретным игроком матча. */
+methodmap MatchPlayer < Handle
+{
+    /** 
+     * Создаёт объект-обёртку для индекса игрока.
+     * 
+     * @param client Индекс игрока на сервере.
+     * @return Объект для чтения данных и управления этим игроком.
+     */
+    public MatchPlayer(int client) { return view_as<MatchPlayer>(client); }
+    /** 
+     * Проверяет, подключён ли игрок и является ли он человеком.
+     * 
+     * @return true, если индекс относится к подключённому игроку; иначе false.
+     */
+    public native bool IsValid();
+    /** 
+     * Проверяет, отметил ли игрок готовность.
+     * 
+     * @return true, если игрок готов; иначе false.
+     */
+    public native bool IsReady();
+    /** 
+     * Устанавливает готовность игрока через DonutMatch.
+     * 
+     * @param ready Новое состояние готовности.
+     * @return true, если изменение принято; иначе false.
+     * @note При изменении статуса вызывается DonutMatch_OnPlayerReady.
+     * @note Затем проверяется, можно ли перейти к следующему этапу подготовки или начать матч.
+     */
+    public native bool SetReady(bool ready);
+    /** 
+     * Проверяет, входит ли игрок в выбранный или активный состав.
+     * 
+     * @return true, если игрок входит в состав; иначе false.
+     */
+    public native bool IsInRoster();
+    /** 
+     * Проверяет, назначен ли игрок капитаном.
+     * 
+     * @return true, если игрок является капитаном; иначе false.
+     */
+    public native bool IsCaptain();
+    /** 
+     * Возвращает номер команды игрока.
+     * 
+     * @return Номер команды SourceMod: 2 — террористы, 3 — спецназ; 0, если команда отсутствует.
+     */
+    public native int Team();
+    /** 
+     * Возвращает число убийств игрока в текущей статистике таблицы счёта.
+     * 
+     * @return Число убийств.
+     */
+    public native int Frags();
+    /** 
+     * Возвращает число смертей игрока в текущей статистике таблицы счёта.
+     * 
+     * @return Число смертей.
+     */
+    public native int Deaths();
+    /** 
+     * Добавляет невыбранного игрока из наблюдателей в свободное место команды Mix.
+     * 
+     * @param team Команда: 2 — террористы, 3 — спецназ.
+     * @return true, если игрок добавлен; иначе false.
+     * @note Доступно только в фазе набора состава и при наличии свободного места.
+     */
+    public native bool AssignToTeam(int team);
+    /** 
+     * Удаляет участника Mix из состава и переводит его в наблюдатели.
+     * 
+     * @return true, если игрок удалён из состава; иначе false.
+     * @note Капитана и игрока уже начавшегося матча удалить этим методом нельзя.
+     */
+    public native bool RemoveFromRoster();
+    /** 
+     * Возвращает идентификатор пользователя SourceMod.
+     * 
+     * @return UserID игрока или 0, если объект недействителен.
+     */
+    public native int UserId();
+    /** 
+     * Копирует Steam-идентификатор игрока в формате Steam2.
+     * 
+     * @param buffer Буфер для идентификатора.
+     * @param size Размер буфера в ячейках.
+     * @return true, если идентификатор получен и скопирован; иначе false.
+     */
+    public native bool AuthId(char[] buffer, int size);
+    /** 
+     * Копирует текущее имя игрока в буфер.
+     * 
+     * @param buffer Буфер для имени.
+     * @param size Размер буфера в ячейках.
+     * @return true, если имя получено и скопировано; иначе false.
+     */
+    public native bool Name(char[] buffer, int size);
+    /** 
+     * Проверяет, жив ли игрок.
+     * 
+     * @return true, если игрок жив; иначе false.
+     */
+    public native bool IsAlive();
+    /** 
+     * Возвращает количество денег игрока.
+     * 
+     * @return Баланс игрока или 0, если объект недействителен.
+     */
+    public native int Money();
+    /** 
+     * Возвращает урон, нанесённый целевому игроку в текущем игровом раунде.
+     * 
+     * @param target Игрок, которому был нанесён урон.
+     * @return Суммарный урон или 0, если данные недоступны.
+     */
+    public native int DamageTo(MatchPlayer target);
+    /** 
+     * Возвращает число попаданий по целевому игроку в текущем игровом раунде.
+
+     * @param target Игрок, по которому стреляли.
+     * @return Число попаданий или 0, если данные недоступны.
+     */
+    public native int HitsTo(MatchPlayer target);
+    /** 
+     * Получает игрока, запросившего замену этому игроку.
+     * 
+     * @return Индекс запрашивающего игрока или 0, если активного запроса нет.
+     */
+    public native int PendingSubstituteRequester();
+    /** 
+     * Получает игрока, которого этот игрок запросил заменить.
+     * 
+     * @return Индекс целевого игрока или 0, если запрос не отправлен или уже завершён.
+     */
+    public native int PendingSubstituteTarget();
+    /** 
+     * Запускает для игрока стандартную процедуру запроса замены, аналогичную команде !ask.
+     * 
+     * @return true, если меню выбора замены открыто; иначе false.
+     * @note Метод доступен участнику активного матча Mix в подходящем состоянии.
+     */
+    public native bool AskForSubstitute();
+};
+
+/** Объект драфта Mix. */
+methodmap MatchDraft < Handle
+{
+    /** 
+     * Создаёт интерфейс текущего драфта.
+     * 
+     * @return Объект доступа к драфту.
+     */
+    public MatchDraft() { return view_as<MatchDraft>(0); }
+    /** 
+     * Проверяет, идёт ли сейчас выбор игроков Mix.
+     * 
+     * @return true, если активна фаза драфта; иначе false.
+     */
+    public native bool IsActive();
+    /** 
+     * Возвращает число доступных кандидатов.
+     * 
+     * @return Количество кандидатов; 0, если драфт неактивен или кандидатов нет.
+     */
+    public native int CandidateCount();
+    /** 
+     * Возвращает капитана, который должен сделать следующий выбор.
+     * 
+     * @return Объект MatchPlayer текущего выбирающего либо недействительный объект, если драфт неактивен.
+     */
+    public native MatchPlayer CurrentPicker();
+    /** 
+     * Создаёт копию списка кандидатов драфта.
+     * 
+     * @return Список индексов игроков; вызывающий код должен вызвать Delete(). При неактивном драфте список пуст.
+     */
+    public native ArrayList Candidates();
+    /** 
+     * Принудительно выбирает кандидата текущим капитаном и продвигает драфт.
+     * 
+     * @param player Объект игрока-кандидата.
+     * @return true, если выбор выполнен; иначе false.
+     */
+    public native bool ForcePick(MatchPlayer player);
+    /** 
+     * Немедленно завершает драфт и переводит матч к подтверждению готовности.
+     * 
+     * @return true, если активный драфт завершён; иначе false.
+     * @note Метод может завершить набор с незаполненными местами в командах.
+     */
+    public native bool Finish();
+    /** 
+     * Устанавливает выбранную сторону для команды в режиме War.
+     * 
+     * @param team Выбранная сторона: 2 — террористы, 3 — спецназ.
+     * @return true, если выбор стороны принят; иначе false.
+     * @note Вызвать метод может только текущий игрок, выбирающий сторону, во время соответствующей фазы.
+     */
+    public native bool ChooseSide(int team);
+};
 
 /**
- * Проверяет сохраненный статус готовности игрока
- *
- * @param client        Индекс игрока для проверки
- * @return              true если готов; false если не готов или client вне диапазона 1..MaxClients
- */
-native bool DonutMatch_GetPlayerReady(int client);
-
-/**
- * Устанавливает статус готовности игрока
- *
- * @param client        Индекс игрока
- * @param ready         true - готов, false - не готов
- * @return              true если client находится в игре и вызов обработан; false при неверном
- *                      индексе или если клиент не находится в игре. Повторная установка того же значения
- *                      возвращает true, но не вызывает DonutMatch_OnPlayerReady повторно.
- * @note                В State_ReadySystem установка ready=false запускает таймер из donut_ready_timer,
- *                      если от игрока ожидается подтверждение готовности. Установка ready=true отменяет
- *                      его. Значение donut_ready_timer=0 отключает кик по таймеру.
- */
-native bool DonutMatch_SetPlayerReady(int client, bool ready);
-
-/**
- * Получает текущий счет матча
- *
- * @param scoreT        Переменная для счета террористов
- * @param scoreCT       Переменная для счета спецназа
- */
-native void DonutMatch_GetScore(int &scoreT, int &scoreCT);
-
-/**
- * Принудительно запускает матч, минуя готовность игроков и обычные предстартовые этапы.
- * Плагин должен быть в State_ReadySystem, и в T/CT должен находиться точный настроенный состав.
- *
- * @return              true если успешно, false если ошибка
- */
-native bool DonutMatch_ForceStart();
-
-/**
- * Сбрасывает состояние матча с причиной, очищает сохраненный плагином состав и счет и запускает
- * рестарт раунда. Не переводит игроков в другие команды и не вызывает DonutMatch_OnMatchEnd.
- *
- * @param reason        Причина остановки матча
- * @return              true если успешно, false если ошибка
- */
-native bool DonutMatch_ForceStop(const char[] reason);
-
-/**
- * Получает количество игроков на сторону
- *
- * @return              Игроков в команде (например, 5 для 5v5)
- */
-native int DonutMatch_GetPlayersPerSide();
-
-/**
- * Получает копию внутреннего списка участников матча.
- * Во время драфта и до State_Starting в Mix содержит выбранных игроков, но капитаны
- * добавляются только при запуске матча. В State_Starting/State_Live/State_Overtime
- * содержит полный активный состав. Не включает кандидатов на драфте или очередь спектаторов.
- *
- * @return              ArrayList с индексами игроков в матче
- * @note                закрыть с delete или CloseHandle()
- */
-native ArrayList DonutMatch_GetLivePlayers();
-
-/**
- * Проверяет, находится ли client во внутреннем списке участников матча.
- * В Mix капитаны попадают в этот список при переходе к запуску матча.
- *
- * @param client        Индекс игрока для проверки
- * @return              true если входит в состав; false если нет или client вне диапазона
- *                      1..MaxClients
- */
-native bool DonutMatch_IsPlayerInMatch(int client);
-
-/**
- * Получает капитана команды в Mix.
- *
- * @param team          Номер команды (2 = T, 3 = CT)
- * @return              Индекс капитана либо 0, если капитан для команды не определен
- */
-native int DonutMatch_GetCaptain(int team);
-
-/**
- * Получает максимальное число раундов сегмента матча.
- * Основное время рассчитано максимум на 30 раундов. Для овертайма возвращается
- * две половины по donut_default_overtime_rounds плюс один возможный решающий раунд.
- *
- * @param overtime      true для овертайма, false для основного времени
- * @return              Максимальное число раундов
- */
-native int DonutMatch_GetMaxRounds(bool overtime = false);
-
-/**
- * Получает сохраненный счет на последнем завершенном перерыве.
- * Значения относятся к сторонам T/CT до смены сторон.
- * Для овертайма возвращает счет последнего завершенного перерыва текущего блока.
- *
- * @param team          Номер стороны (2 = T, 3 = CT)
- * @param overtime      false для основного времени, true для текущего блока овертайма
- * @return              Счет стороны; 0, если перерыв еще не наступил или team некорректен
- */
-native int DonutMatch_GetHalftimeScore(int team, bool overtime = false);
-
-/**
- * Получает текущее название команды по номеру. В Mix название можно задать капитану
- * командой !teamname; при смене сторон оно остается с составом команды.
- *
- * @param team          Номер команды (2 = T, 3 = CT)
- * @param buffer        Буфер для названия команды
- * @param size          Размер буфера
- * @return              true если название получено, false при неверной команде или маленьком буфере
- */
-native bool DonutMatch_GetTeamName(int team, char[] buffer, int size);
-
-/**
- * Получает название режима игры
+ * Записывает текстовое название режима игры в буфер.
  *
  * @param mode          Значение GameMode
  * @param buffer        Буфер для названия режима
  * @param size          Размер буфера
- * @return              true если успешно, false если ошибка
+ * @return              true, если режим распознан и строка записана; иначе false.
  */
 stock bool DonutMatch_GetModeName(GameMode mode, char[] buffer, int size)
 {
@@ -277,12 +669,12 @@ stock bool DonutMatch_GetModeName(GameMode mode, char[] buffer, int size)
 }
 
 /**
- * Получает название состояния матча
+ * Записывает текстовое название состояния матча в буфер.
  *
  * @param state         Значение MatchState
  * @param buffer        Буфер для названия состояния
  * @param size          Размер буфера
- * @return              true если успешно, false если ошибка
+ * @return              true, если состояние распознано и строка записана; иначе false.
  */
 stock bool DonutMatch_GetStateName(MatchState state, char[] buffer, int size)
 {
@@ -304,14 +696,14 @@ stock bool DonutMatch_GetStateName(MatchState state, char[] buffer, int size)
 }
 
 /**
- * Парсит данные из OnMatchStart
+ * Разбирает массив данных, переданный в DonutMatch_OnMatchStart.
  *
- * @param data          Массив данных
- * @param mode          Переменная для режима игры
- * @param playerCount   Переменная для количества игроков
- * @param players       Массив для индексов игроков (размером MAXPLAYERS)
- * @param teams         Массив для команд игроков (размером MAXPLAYERS)
- * @return              true если успешно, false если ошибка
+ * @param data          Исходный массив события: режим, количество игроков, индексы игроков и их команды.
+ * @param mode          На выходе — режим матча.
+ * @param playerCount   На выходе — число игроков в составе.
+ * @param players       На выходе — индексы игроков; массив должен вмещать MAXPLAYERS элементов.
+ * @param teams         На выходе — команды соответствующих игроков; массив должен вмещать MAXPLAYERS элементов.
+ * @return              true, если количество игроков допустимо и данные разобраны; иначе false.
  */
 stock bool DonutMatch_ParseMatchStartData(const any[] data, GameMode &mode, int &playerCount, int[] players, int[] teams)
 {
@@ -331,13 +723,13 @@ stock bool DonutMatch_ParseMatchStartData(const any[] data, GameMode &mode, int 
 }
 
 /**
- * Парсит данные из OnMatchEnd  
+ * Разбирает массив результата, переданный в DonutMatch_OnMatchEnd.
  *
- * @param data          Массив данных
- * @param mode          Переменная для режима игры
- * @param scoreT        Переменная для счета террористов
- * @param scoreCT       Переменная для счета спецназа
- * @return              true если успешно, false если ошибка
+ * @param data          Исходный массив: режим, счёт террористов и счёт спецназа.
+ * @param mode          На выходе — режим завершённого матча.
+ * @param scoreT        На выходе — итоговый счёт террористов.
+ * @param scoreCT       На выходе — итоговый счёт спецназа.
+ * @return              true после разбора значений.
  */
 stock bool DonutMatch_ParseMatchEndData(const any[] data, GameMode &mode, int &scoreT, int &scoreCT)
 {
@@ -361,20 +753,63 @@ public SharedPlugin __pl_donutmatch =
 #if !defined REQUIRE_PLUGIN
 public void __pl_donutmatch_SetNTVOptional()
 {
-    MarkNativeAsOptional("DonutMatch_IsMatchLive");
-    MarkNativeAsOptional("DonutMatch_GetMatchState");
-    MarkNativeAsOptional("DonutMatch_GetGameMode");
-    MarkNativeAsOptional("DonutMatch_GetPlayerReady");
-    MarkNativeAsOptional("DonutMatch_SetPlayerReady");
-    MarkNativeAsOptional("DonutMatch_GetScore");
-    MarkNativeAsOptional("DonutMatch_ForceStart");
-    MarkNativeAsOptional("DonutMatch_ForceStop");
-    MarkNativeAsOptional("DonutMatch_GetPlayersPerSide");
-    MarkNativeAsOptional("DonutMatch_GetLivePlayers");
-    MarkNativeAsOptional("DonutMatch_IsPlayerInMatch");
-    MarkNativeAsOptional("DonutMatch_GetCaptain");
-    MarkNativeAsOptional("DonutMatch_GetMaxRounds");
-    MarkNativeAsOptional("DonutMatch_GetHalftimeScore");
-    MarkNativeAsOptional("DonutMatch_GetTeamName");
+    MarkNativeAsOptional("DonutMatch.IsLive");
+    MarkNativeAsOptional("DonutMatch.State");
+    MarkNativeAsOptional("DonutMatch.Mode");
+    MarkNativeAsOptional("DonutMatch.IsReady");
+    MarkNativeAsOptional("DonutMatch.SetReady");
+    MarkNativeAsOptional("DonutMatch.GetScore");
+    MarkNativeAsOptional("DonutMatch.Start");
+    MarkNativeAsOptional("DonutMatch.Stop");
+    MarkNativeAsOptional("DonutMatch.SwapTeams");
+    MarkNativeAsOptional("DonutMatch.PlayersPerSide");
+    MarkNativeAsOptional("DonutMatch.LivePlayers");
+    MarkNativeAsOptional("DonutMatch.IsPlayerInMatch");
+    MarkNativeAsOptional("DonutMatch.Captain");
+    MarkNativeAsOptional("DonutMatch.MaxRounds");
+    MarkNativeAsOptional("DonutMatch.HalftimeScore");
+    MarkNativeAsOptional("DonutMatch.TeamName");
+    MarkNativeAsOptional("DonutMatch.SetTeamName");
+    MarkNativeAsOptional("DonutMatch.TeamScore");
+    MarkNativeAsOptional("DonutMatch.TeamPlayers");
+    MarkNativeAsOptional("DonutMatch.QueuedPlayers");
+    MarkNativeAsOptional("DonutMatch.OpenSlots");
+    MarkNativeAsOptional("DonutMatch.MissingPlayersToStart");
+    MarkNativeAsOptional("DonutMatch.CanStart");
+    MarkNativeAsOptional("DonutMatch.GetOvertimeVote");
+    MarkNativeAsOptional("DonutMatch.StartOvertime");
+    MarkNativeAsOptional("DonutMatch.DatabaseStatus");
+    MarkNativeAsOptional("DonutMatch.LogEvent");
+    MarkNativeAsOptional("DonutMatch.HasLastMatch");
+    MarkNativeAsOptional("DonutMatch.LastMatchMode");
+    MarkNativeAsOptional("DonutMatch.GetLastMatchScore");
+    MarkNativeAsOptional("DonutMatch.LastTeamName");
+    MarkNativeAsOptional("MatchPlayer.IsValid");
+    MarkNativeAsOptional("MatchPlayer.IsReady");
+    MarkNativeAsOptional("MatchPlayer.SetReady");
+    MarkNativeAsOptional("MatchPlayer.IsInRoster");
+    MarkNativeAsOptional("MatchPlayer.IsCaptain");
+    MarkNativeAsOptional("MatchPlayer.Team");
+    MarkNativeAsOptional("MatchPlayer.Frags");
+    MarkNativeAsOptional("MatchPlayer.Deaths");
+    MarkNativeAsOptional("MatchPlayer.AskForSubstitute");
+    MarkNativeAsOptional("MatchPlayer.UserId");
+    MarkNativeAsOptional("MatchPlayer.AssignToTeam");
+    MarkNativeAsOptional("MatchPlayer.RemoveFromRoster");
+    MarkNativeAsOptional("MatchPlayer.AuthId");
+    MarkNativeAsOptional("MatchPlayer.Name");
+    MarkNativeAsOptional("MatchPlayer.IsAlive");
+    MarkNativeAsOptional("MatchPlayer.Money");
+    MarkNativeAsOptional("MatchPlayer.DamageTo");
+    MarkNativeAsOptional("MatchPlayer.HitsTo");
+    MarkNativeAsOptional("MatchPlayer.PendingSubstituteRequester");
+    MarkNativeAsOptional("MatchPlayer.PendingSubstituteTarget");
+    MarkNativeAsOptional("MatchDraft.IsActive");
+    MarkNativeAsOptional("MatchDraft.CandidateCount");
+    MarkNativeAsOptional("MatchDraft.CurrentPicker");
+    MarkNativeAsOptional("MatchDraft.Candidates");
+    MarkNativeAsOptional("MatchDraft.ForcePick");
+    MarkNativeAsOptional("MatchDraft.Finish");
+    MarkNativeAsOptional("MatchDraft.ChooseSide");
 }
 #endif
