@@ -5,7 +5,7 @@
 <h1 align="center">DonutMatch</h1>
 <h3 align="center">Полноценная система организации матчей — от ready-up до финального результата.</h3>
 
-<p align="center"><code>v1.1.0-latest</code> · <code>SourceMod 1.11</code> · <code>CS:S | СS:S v34</code></p>
+<p align="center"><code>v1.2.0-latest</code> · <code>SourceMod 1.11</code> · <code>CS:S | СS:S v34</code></p>
 
 ---
 
