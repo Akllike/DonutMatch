@@ -14,8 +14,8 @@
     "MatchStarts"
     {
         #format "{1:d}"
-        "en" "{green}[DonutMatch]{white} Match starts in {1}..."
-        "ru" "{green}[DonutMatch]{white} Матч начнется через {1}..."
+        "en" "{green}[DonutMatch]{white} Match starts in{red} {1}..."
+        "ru" "{green}[DonutMatch]{white} Матч начнется через{red} {1}..."
     }
     "CaptainsKnifeStarts"
     {
@@ -30,8 +30,8 @@
     "FinalScoreNamed"
     {
         #format "{1:s},{2:d},{3:d},{4:s}"
-        "en" "{green}[DonutMatch]{white} Final score: {1} {olive}[{2}:{3}]{white} {4}"
-        "ru" "{green}[DonutMatch]{white} Итоговый счет: {1} {olive}[{2}:{3}]{white} {4}"
+        "en" "{green}[DonutMatch]{white} Final score: {1} {olive}[{2}-{3}]{white} {4}"
+        "ru" "{green}[DonutMatch]{white} Итоговый счет: {1} {olive}[{2}-{3}]{white} {4}"
     }
     "TieOvertime"
     {
@@ -169,14 +169,14 @@
     "ScoreNamed"
     {
         #format "{1:s},{2:d},{3:d},{4:s},{5:s}"
-        "en" "{green}[DonutMatch]{white} {1} {olive}[{2}:{3}]{white} {4}{5}"
-        "ru" "{green}[DonutMatch]{white} {1} {olive}[{2}:{3}]{white} {4}{5}"
+        "en" "{green}[DonutMatch]{white} {1} {olive}[{2}-{3}]{white} {4}{5}"
+        "ru" "{green}[DonutMatch]{white} {1} {olive}[{2}-{3}]{white} {4}{5}"
     }
     "LastMatchNamed"
     {
         #format "{1:s},{2:d},{3:d},{4:s}"
-        "en" "{green}[DonutMatch]{white} Last match {1} {olive}[{2}:{3}]{white} {4}"
-        "ru" "{green}[DonutMatch]{white} Последний матч {1} {olive}[{2}:{3}]{white} {4}"
+        "en" "{green}[DonutMatch]{white} Last match {1} {olive}[{2}-{3}]{white} {4}"
+        "ru" "{green}[DonutMatch]{white} Последний матч {1} {olive}[{2}-{3}]{white} {4}"
     }
     "NoActive"
     {
@@ -191,8 +191,8 @@
     "LastMatchNamedMode"
     {
         #format "{1:s},{2:d},{3:d},{4:s},{5:d}"
-        "en" "{green}[DonutMatch]{white} Last match {1} {olive}[{2}:{3}]{white} {4} (mode {5})."
-        "ru" "{green}[DonutMatch]{white} Последний матч {1} {olive}[{2}:{3}]{white} {4} (режим {5})."
+        "en" "{green}[DonutMatch]{white} Last match {1} {olive}[{2}-{3}]{white} {4} (mode {5})."
+        "ru" "{green}[DonutMatch]{white} Последний матч {1} {olive}[{2}-{3}]{white} {4} (режим {5})."
     }
     "DamageReports"
     {
@@ -364,8 +364,8 @@
     }
     "MatchStarted"
     {
-        "en" "{green}[DonutMatch]{white} MATCH STARTED! GL & HF!"
-        "ru" "{green}[DonutMatch]{white} МАТЧ НАЧАЛСЯ! GL & HF!"
+        "en" "{green}[DonutMatch]{white} MATCH STARTED!{red} GL & HF!"
+        "ru" "{green}[DonutMatch]{white} МАТЧ НАЧАЛСЯ!{red} GL & HF!"
     }
     "PlayersCaptains"
     {
@@ -645,7 +645,7 @@
     "CounterTerroristsName"
     {
         "en" "Counter-Terrorists"
-        "ru" "Спецназа"
+        "ru" "Спецназ"
     }
     "Reset_MatchFinished"
     {
@@ -738,5 +738,196 @@
         #format "{1:s},{2:d}"
         "en" "{1}: ${2}"
         "ru" "{1}: ${2}"
+    }
+    "WarSeriesMapPoolTooSmall"
+    {
+        "en" "{green}[DonutMatch]{white} War-series veto requires at least 7 valid unique maps. The series was not started."
+        "ru" "{green}[DonutMatch]{white} Для veto серии нужно минимум 7 валидных уникальных карт. Серия не запущена."
+    }
+    "WarSeriesVetoStarting"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} BO{1} veto is starting. The first team is selected randomly."
+        "ru" "{green}[DonutMatch]{white} Начинается veto BO{1}. Первая команда выбирается случайно."
+    }
+    "WarSeriesSides"
+    {
+        #format "{1:s},{2:s},{3:s},{4:s}"
+        "en" "{green}[DonutMatch]{white} {1} starts on {2}, {3} starts on {4}."
+        "ru" "{green}[DonutMatch]{white} Команда {1} начинает за {2}, команда {3} — за {4}."
+    }
+    "SidePickTimedOut"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} No side was chosen. The winning team stays on {1}."
+        "ru" "{green}[DonutMatch]{white} Сторона не выбрана. Команда победителей остаётся за {1}."
+    }
+    "WarSeriesNextMap"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} Next map in the series: {1}."
+        "ru" "{green}[DonutMatch]{white} Следующая карта серии: {1}."
+    }
+    "WarSeriesTransitionDelay"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} The next transition will happen in {1} seconds."
+        "ru" "{green}[DonutMatch]{white} Переход начнется через {1} сек."
+    }
+    "WarSeriesMapTie"
+    {
+        "en" "{green}[DonutMatch]{white} The series map ended in a tie and will be replayed."
+        "ru" "{green}[DonutMatch]{white} Ничья на карте серии, карта будет переиграна."
+    }
+    "WarSeriesScore"
+    {
+        #format "{1:d},{2:s},{3:d},{4:d},{5:s}"
+        "en" "{green}[DonutMatch]{white} BO{1} series score: {2} {3} - {4} {5}."
+        "ru" "{green}[DonutMatch]{white} Счёт серии BO{1}: {2} {3} - {4} {5}."
+    }
+    "WarSeriesCaptainsUnavailable"
+    {
+        "en" "{green}[DonutMatch]{white} A series captain is unavailable or both captains are on the same side. The series was cancelled to avoid an incorrect result."
+        "ru" "{green}[DonutMatch]{white} Капитан серии недоступен или оба капитана находятся за одну сторону. Серия отменена, чтобы не засчитать неверный результат."
+    }
+    "WarSeriesWinner"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} The series is over. {1} won."
+        "ru" "{green}[DonutMatch]{white} Серия завершена. Победила команда {1}."
+    }
+    "WarVetoPickTurn"
+    {
+        #format "{1:s},{2:d},{3:d}"
+        "en" "{green}[DonutMatch]{white} {1} picks a map ({2}/{3})."
+        "ru" "{green}[DonutMatch]{white} Команда {1} выбирает карту ({2}/{3})."
+    }
+    "WarVetoBanTurn"
+    {
+        #format "{1:s},{2:d},{3:d}"
+        "en" "{green}[DonutMatch]{white} {1} bans a map ({2}/{3})."
+        "ru" "{green}[DonutMatch]{white} Команда {1} банит карту ({2}/{3})."
+    }
+    "WarVetoMenuPickTitle"
+    {
+        #format "{1:s}"
+        "en" "Team {1}: pick a map"
+        "ru" "Команда {1}: выберите карту"
+    }
+    "WarVetoMenuBanTitle"
+    {
+        #format "{1:s}"
+        "en" "Team {1}: ban a map"
+        "ru" "Команда {1}: забаньте карту"
+    }
+    "WarVetoPlayerPicked"
+    {
+        #format "{1:s},{2:s}"
+        "en" "{green}[DonutMatch]{white} {1} picked {2}."
+        "ru" "{green}[DonutMatch]{white} {1} выбрал карту {2}."
+    }
+    "WarVetoAutoPicked"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} Map {1} was picked automatically."
+        "ru" "{green}[DonutMatch]{white} Автоматически выбрана карта {1}."
+    }
+    "WarVetoPlayerBanned"
+    {
+        #format "{1:s},{2:s}"
+        "en" "{green}[DonutMatch]{white} {1} banned {2}."
+        "ru" "{green}[DonutMatch]{white} {1} забанил карту {2}."
+    }
+    "WarVetoAutoBanned"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} Map {1} was banned automatically."
+        "ru" "{green}[DonutMatch]{white} Автоматически забанена карта {1}."
+    }
+    "WarSeriesVetoError"
+    {
+        "en" "{green}[DonutMatch]{white} Veto error. The series was cancelled."
+        "ru" "{green}[DonutMatch]{white} Ошибка veto, серия отменена."
+    }
+    "WarSeriesVetoComplete"
+    {
+        "en" "{green}[DonutMatch]{white} Veto complete. Series maps:"
+        "ru" "{green}[DonutMatch]{white} Veto завершено. Карты серии:"
+    }
+    "WarSeriesMapListItem"
+    {
+        #format "{1:d},{2:s}"
+        "en" "{green}{1}. {2}"
+        "ru" "{green}{1}. {2}"
+    }
+    "WarModeVoteTitle"
+    {
+        "en" "Choose the War match format"
+        "ru" "Выберите формат War-матча"
+    }
+    "WarModeOptionClassic"
+    {
+        "en" "Classic match"
+        "ru" "Классический матч"
+    }
+    "WarModeOptionBO1"
+    {
+        "en" "BO1 series"
+        "ru" "Серия BO1"
+    }
+    "WarModeOptionBO3"
+    {
+        "en" "BO3 series"
+        "ru" "Серия BO3"
+    }
+    "WarModeOptionBO5"
+    {
+        "en" "BO5 series"
+        "ru" "Серия BO5"
+    }
+    "WarModeVoteRecorded"
+    {
+        "en" "{green}[DonutMatch]{white} Your choice is recorded. Waiting for the other captain."
+        "ru" "{green}[DonutMatch]{white} Ваш выбор записан. Ожидаем второго капитана."
+    }
+    "WarModeVoteAgreedClassic"
+    {
+        "en" "{green}[DonutMatch]{white} Captains agreed on a classic match."
+        "ru" "{green}[DonutMatch]{white} Капитаны выбрали классический матч."
+    }
+    "WarModeVoteAgreedBO1"
+    {
+        "en" "{green}[DonutMatch]{white} Captains agreed on a BO1 series."
+        "ru" "{green}[DonutMatch]{white} Капитаны выбрали серию BO1."
+    }
+    "WarModeVoteAgreedBO3"
+    {
+        "en" "{green}[DonutMatch]{white} Captains agreed on a BO3 series."
+        "ru" "{green}[DonutMatch]{white} Капитаны выбрали серию BO3."
+    }
+    "WarModeVoteAgreedBO5"
+    {
+        "en" "{green}[DonutMatch]{white} Captains agreed on a BO5 series."
+        "ru" "{green}[DonutMatch]{white} Капитаны выбрали серию BO5."
+    }
+    "WarModeVoteTeamsLocked"
+    {
+        "en" "{green}[DonutMatch]{white} Teams cannot be changed during the format vote."
+        "ru" "{green}[DonutMatch]{white} Во время голосования за формат нельзя менять команду."
+    }
+    "Reset_WarModeVoteMismatch"
+    {
+        "en" "The captains chose different match formats. Everyone must ready up again."
+        "ru" "Капитаны выбрали разные режимы матча. Игрокам нужно снова написать !ready."
+    }
+    "Reset_WarModeVoteCancelled"
+    {
+        "en" "The War format vote was cancelled. Everyone must ready up again."
+        "ru" "Голосование за формат War отменено. Игрокам нужно снова написать !ready."
+    }
+    "Reset_WarModeVoteRosterChanged"
+    {
+        "en" "The roster changed during the War format vote. Everyone must ready up again."
+        "ru" "Состав изменился во время голосования за формат War. Игрокам нужно снова написать !ready."
     }
 }

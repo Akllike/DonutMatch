@@ -13,6 +13,85 @@ public Plugin myinfo =
     url = "https://t.me/phenom1337"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    MarkNativeAsOptional("DonutMatch.IsLive");
+    MarkNativeAsOptional("DonutMatch.State");
+    MarkNativeAsOptional("DonutMatch.Mode");
+    MarkNativeAsOptional("DonutMatch.IsReady");
+    MarkNativeAsOptional("DonutMatch.GetScore");
+    MarkNativeAsOptional("DonutMatch.Start");
+    MarkNativeAsOptional("DonutMatch.Stop");
+    MarkNativeAsOptional("DonutMatch.SwapTeams");
+    MarkNativeAsOptional("DonutMatch.PlayersPerSide");
+    MarkNativeAsOptional("DonutMatch.LivePlayers");
+    MarkNativeAsOptional("DonutMatch.IsPlayerInMatch");
+    MarkNativeAsOptional("DonutMatch.Captain");
+    MarkNativeAsOptional("DonutMatch.MaxRounds");
+    MarkNativeAsOptional("DonutMatch.HalftimeScore");
+    MarkNativeAsOptional("DonutMatch.TeamName");
+    MarkNativeAsOptional("DonutMatch.SetTeamName");
+    MarkNativeAsOptional("DonutMatch.TeamScore");
+    MarkNativeAsOptional("DonutMatch.TeamPlayers");
+    MarkNativeAsOptional("DonutMatch.QueuedPlayers");
+    MarkNativeAsOptional("DonutMatch.OpenSlots");
+    MarkNativeAsOptional("DonutMatch.MissingPlayersToStart");
+    MarkNativeAsOptional("DonutMatch.CanStart");
+    MarkNativeAsOptional("DonutMatch.GetOvertimeVote");
+    MarkNativeAsOptional("DonutMatch.StartOvertime");
+    MarkNativeAsOptional("DonutMatch.DatabaseStatus");
+    MarkNativeAsOptional("DonutMatch.LogEvent");
+    MarkNativeAsOptional("DonutMatch.HasLastMatch");
+    MarkNativeAsOptional("DonutMatch.LastMatchMode");
+    MarkNativeAsOptional("DonutMatch.GetLastMatchScore");
+    MarkNativeAsOptional("DonutMatch.LastTeamName");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMode");
+    MarkNativeAsOptional("DonutMatch.IsWarSeriesActive");
+    MarkNativeAsOptional("DonutMatch.WarSeriesWins");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapsToWin");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapIndex");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoAction");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoTeam");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoCaptain");
+    MarkNativeAsOptional("DonutMatch.GetWarVetoProgress");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapPool");
+    MarkNativeAsOptional("DonutMatch.WarSeriesAvailableMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesBannedMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesPickedMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMaps");
+    MarkNativeAsOptional("DonutMatch.SetWarSeriesMode");
+    MarkNativeAsOptional("DonutMatch.SetWarSeriesMapPool");
+    MarkNativeAsOptional("DonutMatch.ChooseWarVetoMap");
+    MarkNativeAsOptional("MatchPlayer.IsValid");
+    MarkNativeAsOptional("MatchPlayer.IsReady");
+    MarkNativeAsOptional("MatchPlayer.SetReady");
+    MarkNativeAsOptional("MatchPlayer.IsInRoster");
+    MarkNativeAsOptional("MatchPlayer.IsCaptain");
+    MarkNativeAsOptional("MatchPlayer.Team");
+    MarkNativeAsOptional("MatchPlayer.Frags");
+    MarkNativeAsOptional("MatchPlayer.Deaths");
+    MarkNativeAsOptional("MatchPlayer.AssignToTeam");
+    MarkNativeAsOptional("MatchPlayer.RemoveFromRoster");
+    MarkNativeAsOptional("MatchPlayer.UserId");
+    MarkNativeAsOptional("MatchPlayer.AuthId");
+    MarkNativeAsOptional("MatchPlayer.Name");
+    MarkNativeAsOptional("MatchPlayer.IsAlive");
+    MarkNativeAsOptional("MatchPlayer.Money");
+    MarkNativeAsOptional("MatchPlayer.DamageTo");
+    MarkNativeAsOptional("MatchPlayer.HitsTo");
+    MarkNativeAsOptional("MatchPlayer.PendingSubstituteRequester");
+    MarkNativeAsOptional("MatchPlayer.PendingSubstituteTarget");
+    MarkNativeAsOptional("MatchPlayer.AskForSubstitute");
+    MarkNativeAsOptional("MatchDraft.IsActive");
+    MarkNativeAsOptional("MatchDraft.CandidateCount");
+    MarkNativeAsOptional("MatchDraft.CurrentPicker");
+    MarkNativeAsOptional("MatchDraft.Candidates");
+    MarkNativeAsOptional("MatchDraft.ForcePick");
+    MarkNativeAsOptional("MatchDraft.Finish");
+    MarkNativeAsOptional("MatchDraft.ChooseSide");
+    return APLRes_Success;
+}
+
 bool g_bDonutMatchAvailable;
 DonutMatch g_DonutMatch;
 
@@ -26,6 +105,11 @@ public void OnPluginStart()
     RegConsoleCmd("sm_dm_example_readyinfo", Command_ExampleReadyInfo, "Проверить статус готовности: sm_dm_example_readyinfo <игрок>");
     RegAdminCmd("sm_dm_example_setready", Command_ExampleSetReady, ADMFLAG_GENERIC, "Пример установки готовности: sm_dm_example_setready <игрок> <0|1>");
     RegConsoleCmd("sm_dm_example_roster", Command_ExampleRoster, "Показать пример чтения состава матча");
+    RegAdminCmd("sm_dm_example_swap", Command_ExampleSwapTeams, ADMFLAG_GENERIC, "Пример смены сторон через DonutMatch API");
+    RegConsoleCmd("sm_dm_example_war", Command_ExampleWar, "Показать состояние War-серии и veto");
+    RegAdminCmd("sm_dm_example_setseries", Command_ExampleSetWarSeriesMode, ADMFLAG_GENERIC, "Установить формат War: sm_dm_example_setseries <0|1|2>");
+    RegAdminCmd("sm_dm_example_mappool", Command_ExampleSetWarMapPool, ADMFLAG_GENERIC, "Задать пул карт: sm_dm_example_mappool <map1,map2,...>");
+    RegAdminCmd("sm_dm_example_veto", Command_ExampleChooseWarVetoMap, ADMFLAG_GENERIC, "Пример выбора текущего шага veto: sm_dm_example_veto <map>");
     RegAdminCmd("sm_dm_example_forcestart", Command_ExampleForceStart, ADMFLAG_GENERIC, "Пример вызова DonutMatch_ForceStart");
     RegAdminCmd("sm_dm_example_forcestop", Command_ExampleForceStop, ADMFLAG_GENERIC, "Пример вызова DonutMatch_ForceStop");
     RegConsoleCmd("sm_dm_example_draft", Command_ExampleDraft, "Показать состояние Mix-драфта и кандидатов");
@@ -152,6 +236,117 @@ public Action Command_ExampleStatus(int client, int args)
 
     // Native DonutMatch_GetPlayerReady показан отдельной командой ниже, потому что
     // для него нужен индекс конкретного игрока.
+    return Plugin_Handled;
+}
+
+public Action Command_ExampleSwapTeams(int client, int args)
+{
+    if (!RequireDonutMatch(client)) return Plugin_Handled;
+    ReplyToCommand(client, "[DM API] SwapTeams() => %d", g_DonutMatch.SwapTeams());
+    return Plugin_Handled;
+}
+
+public Action Command_ExampleWar(int client, int args)
+{
+    if (!RequireDonutMatch(client)) return Plugin_Handled;
+
+    int vetoStep, vetoStepCount;
+    g_DonutMatch.GetWarVetoProgress(vetoStep, vetoStepCount);
+    ReplyToCommand(client, "[DM API] War active=%d mode=%d wins A/B=%d/%d mapsToWin=%d mapIndex=%d",
+        g_DonutMatch.IsWarSeriesActive(), g_DonutMatch.WarSeriesMode(),
+        g_DonutMatch.WarSeriesWins(WarSeries_TeamA), g_DonutMatch.WarSeriesWins(WarSeries_TeamB),
+        g_DonutMatch.WarSeriesMapsToWin(), g_DonutMatch.WarSeriesMapIndex());
+    ReplyToCommand(client, "[DM API] veto action=%d team=%d captain=%d step=%d/%d",
+        g_DonutMatch.CurrentWarVetoAction(), g_DonutMatch.CurrentWarVetoTeam(),
+        g_DonutMatch.CurrentWarVetoCaptain(), vetoStep, vetoStepCount);
+
+    ArrayList mapPool = g_DonutMatch.WarSeriesMapPool();
+    ArrayList availableMaps = g_DonutMatch.WarSeriesAvailableMaps();
+    ArrayList bannedMaps = g_DonutMatch.WarSeriesBannedMaps();
+    ArrayList pickedMaps = g_DonutMatch.WarSeriesPickedMaps();
+    ArrayList seriesMaps = g_DonutMatch.WarSeriesMaps();
+    ReplyToCommand(client, "[DM API] maps pool/available/banned/picked/order=%d/%d/%d/%d/%d",
+        mapPool.Length, availableMaps.Length, bannedMaps.Length, pickedMaps.Length, seriesMaps.Length);
+    PrintExampleMapList(client, "pool", mapPool);
+    PrintExampleMapList(client, "available", availableMaps);
+    PrintExampleMapList(client, "banned", bannedMaps);
+    PrintExampleMapList(client, "picked", pickedMaps);
+    PrintExampleMapList(client, "series", seriesMaps);
+    delete mapPool;
+    delete availableMaps;
+    delete bannedMaps;
+    delete pickedMaps;
+    delete seriesMaps;
+    return Plugin_Handled;
+}
+
+void PrintExampleMapList(int client, const char[] label, ArrayList maps)
+{
+    char mapName[PLATFORM_MAX_PATH];
+    for (int i = 0; i < maps.Length; i++)
+    {
+        maps.GetString(i, mapName, sizeof(mapName));
+        ReplyToCommand(client, "  %s[%d]=%s", label, i, mapName);
+    }
+}
+
+public Action Command_ExampleSetWarSeriesMode(int client, int args)
+{
+    if (!RequireDonutMatch(client)) return Plugin_Handled;
+    if (args < 1)
+    {
+        ReplyToCommand(client, "Usage: sm_dm_example_setseries <0|1|2>");
+        return Plugin_Handled;
+    }
+
+    char modeArg[8];
+    GetCmdArg(1, modeArg, sizeof(modeArg));
+    int mode = StringToInt(modeArg);
+    if (mode < view_as<int>(WarSeries_BO1) || mode > view_as<int>(WarSeries_BO5))
+    {
+        ReplyToCommand(client, "[DM API] Формат должен быть 0 (BO1), 1 (BO3) или 2 (BO5).");
+        return Plugin_Handled;
+    }
+    ReplyToCommand(client, "[DM API] SetWarSeriesMode(%d) => %d",
+        mode, g_DonutMatch.SetWarSeriesMode(view_as<WarSeriesMode>(mode)));
+    return Plugin_Handled;
+}
+
+public Action Command_ExampleSetWarMapPool(int client, int args)
+{
+    if (!RequireDonutMatch(client)) return Plugin_Handled;
+    if (args < 1)
+    {
+        ReplyToCommand(client, "Usage: sm_dm_example_mappool <map1,map2,...>");
+        return Plugin_Handled;
+    }
+
+    char mapPool[256];
+    GetCmdArg(1, mapPool, sizeof(mapPool));
+    ReplyToCommand(client, "[DM API] SetWarSeriesMapPool => %d",
+        g_DonutMatch.SetWarSeriesMapPool(mapPool));
+    return Plugin_Handled;
+}
+
+public Action Command_ExampleChooseWarVetoMap(int client, int args)
+{
+    if (!RequireDonutMatch(client)) return Plugin_Handled;
+    if (args < 1)
+    {
+        ReplyToCommand(client, "Usage: sm_dm_example_veto <map>");
+        return Plugin_Handled;
+    }
+
+    int captain = g_DonutMatch.CurrentWarVetoCaptain();
+    if (captain <= 0)
+    {
+        ReplyToCommand(client, "[DM API] Сейчас нет активного выбора veto.");
+        return Plugin_Handled;
+    }
+    char mapName[PLATFORM_MAX_PATH];
+    GetCmdArg(1, mapName, sizeof(mapName));
+    ReplyToCommand(client, "[DM API] ChooseWarVetoMap(captain=%d, map=%s) => %d",
+        captain, mapName, g_DonutMatch.ChooseWarVetoMap(captain, mapName));
     return Plugin_Handled;
 }
 
@@ -608,4 +803,33 @@ public void DonutMatch_OnDatabaseResultSaved(const char[] map, GameMode mode, in
 {
     PrintToServer("[DM API forward] DatabaseResultSaved: %s mode=%d %dv%d score=%d:%d duration=%ds at=%d",
         map, mode, playersPerSide, playersPerSide, scoreT, scoreCT, durationSeconds, playedAt);
+}
+
+public void DonutMatch_OnWarSeriesStart(WarSeriesMode mode, int mapsToWin, int mapCount)
+{
+    PrintToServer("[DM API forward] WarSeriesStart: mode=%d mapsToWin=%d maps=%d", mode, mapsToWin, mapCount);
+}
+
+public void DonutMatch_OnWarVetoChoice(WarSeriesTeam team, WarVetoAction action,
+    const char[] mapName, int step, int stepCount, int client, bool automatic)
+{
+    PrintToServer("[DM API forward] WarVetoChoice: team=%d action=%d map=%s step=%d/%d client=%d auto=%d",
+        team, action, mapName, step, stepCount, client, automatic);
+}
+
+public void DonutMatch_OnWarSeriesVetoComplete()
+{
+    PrintToServer("[DM API forward] WarSeriesVetoComplete");
+}
+
+public void DonutMatch_OnWarSeriesMapEnd(int mapIndex, const char[] mapName,
+    WarSeriesTeam winner, int scoreT, int scoreCT, int teamAWins, int teamBWins)
+{
+    PrintToServer("[DM API forward] WarSeriesMapEnd: index=%d map=%s winner=%d score=%d:%d series=%d:%d",
+        mapIndex, mapName, winner, scoreT, scoreCT, teamAWins, teamBWins);
+}
+
+public void DonutMatch_OnWarSeriesEnd(WarSeriesTeam winner, int teamAWins, int teamBWins)
+{
+    PrintToServer("[DM API forward] WarSeriesEnd: winner=%d score=%d:%d", winner, teamAWins, teamBWins);
 }
