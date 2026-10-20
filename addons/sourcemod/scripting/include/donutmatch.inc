@@ -38,12 +38,14 @@ enum MatchDatabaseStatus
     MatchDatabase_Unavailable   /**< Соединение не удалось или база недоступна. */
 };
 
-/** Формат серии War по количеству карт. */
+/** Формат War-матча или серии карт. */
 enum WarSeriesMode
 {
-    WarSeries_BO1 = 0, /**< Серия из одной карты. */
-    WarSeries_BO3,     /**< Серия до двух побед. */
-    WarSeries_BO5      /**< Серия до трёх побед. */
+    WarSeries_Unknown = -1, /**< Матч не War или формат ещё не выбран. */
+    WarSeries_BO1 = 0,      /**< Серия из одной карты. */
+    WarSeries_BO3,          /**< Серия до двух побед. */
+    WarSeries_BO5,          /**< Серия до трёх побед. */
+    WarSeries_Classic       /**< Обычный матч War без серии карт. */
 };
 
 /** Идентификатор команды серии War. */
@@ -83,17 +85,21 @@ forward void DonutMatch_OnRoundScore(int scoreT, int scoreCT, int winnerTeam);
 /**
  * Вызывается при начале матча.
  *
- * @param data          Массив: [режим, число игроков, индексы игроков[MAXPLAYERS], команды[MAXPLAYERS]].
+ * @param data          Массив: [режим, число игроков, игроки[MAXPLAYERS], команды[MAXPLAYERS], формат War].
  *                      Индексы игроков начинаются с data[2], команды — с data[2 + MAXPLAYERS].
- * @param dataSize      Размер массива в ячейках: 2 + MAXPLAYERS * 2.
+ *                      Формат находится в data[2 + MAXPLAYERS * 2]: WarSeries_Unknown для Mix,
+ *                      либо WarSeries_Classic/BO1/BO3/BO5 для War.
+ * @param dataSize      Размер массива в ячейках: 3 + MAXPLAYERS * 2.
  */
 forward void DonutMatch_OnMatchStart(const any[] data, int dataSize);
 
 /**
  * Вызывается при завершении матча.
  *
- * @param data          Массив результата: [режим, счёт террористов, счёт спецназа].
- * @param dataSize      Размер массива: 3 ячейки.
+ * @param data          Массив результата: [режим, счёт T, счёт CT, формат War].
+ *                      Формат находится в data[3]: WarSeries_Unknown для Mix,
+ *                      либо WarSeries_Classic/BO1/BO3/BO5 для War.
+ * @param dataSize      Размер массива: 4 ячейки.
  */
 forward void DonutMatch_OnMatchEnd(const any[] data, int dataSize);
 
@@ -242,9 +248,9 @@ forward void DonutMatch_OnDatabaseResultSaved(const char[] map, GameMode mode, i
  *
  * @param mode          Формат серии.
  * @param mapsToWin     Количество победных карт, необходимое для завершения серии.
- * @param mapCount      Количество карт в проверенном пуле.
+ * @param bestOf        Максимальное количество карт в серии (1, 3 или 5).
  */
-forward void DonutMatch_OnWarSeriesStart(WarSeriesMode mode, int mapsToWin, int mapCount);
+forward void DonutMatch_OnWarSeriesStart(WarSeriesMode mode, int mapsToWin, int bestOf);
 
 /**
  * Вызывается после каждого успешного выбора или бана карты.
@@ -312,6 +318,16 @@ methodmap DonutMatch < Handle
      * @return Значение GameMode; MODE_NONE, если режим не задан.
      */
     public native GameMode Mode();
+    /**
+     * Возвращает выбранный формат текущего War-матча.
+     * @return WarSeries_Classic или WarSeries_BO1/BO3/BO5; Unknown, если формат ещё не выбран или режим не War.
+     */
+    public native WarSeriesMode WarMatchFormat();
+    /**
+     * Возвращает формат последнего завершённого матча War.
+     * @return WarSeries_Classic, WarSeries_BO1/3/5 или WarSeries_Unknown.
+     */
+    public native WarSeriesMode LastWarMatchFormat();
     /**
      * Проверяет готовность игрока.
      *
@@ -522,8 +538,9 @@ methodmap DonutMatch < Handle
      */
     public native bool LastTeamName(int team, char[] buffer, int size);
     /**
-     * Возвращает формат активной серии или настроенный формат, если серия неактивна.
-     * @return Одно из значений WarSeriesMode.
+        * Возвращает формат активной серии или настроенный формат следующей серии, если серия неактивна.
+        * @return WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
+        * @note Не определяет формат выбранного матча War; для этого используйте WarMatchFormat().
      */
     public native WarSeriesMode WarSeriesMode();
     /**
@@ -869,12 +886,13 @@ stock bool DonutMatch_GetStateName(MatchState state, char[] buffer, int size)
 /**
  * Разбирает массив данных, переданный в DonutMatch_OnMatchStart.
  *
- * @param data          Массив DonutMatch_OnMatchStart размером не менее 2 + MAXPLAYERS * 2 ячеек.
+ * @param data          Массив DonutMatch_OnMatchStart размером не менее 3 + MAXPLAYERS * 2 ячеек.
  * @param mode          На выходе — режим матча.
  * @param playerCount   На выходе — число игроков в составе.
  * @param players       Массив для индексов игроков; должен вмещать MAXPLAYERS элементов.
  * @param teams         Массив для команд игроков; должен вмещать MAXPLAYERS элементов.
  * @return true, если число игроков находится в диапазоне 1..MAXPLAYERS; иначе false.
+ * @note Формат War расположен в data[2 + MAXPLAYERS * 2]; функция его не копирует.
  * @note Размер входного и выходных массивов должен быть достаточным; функция его не проверяет.
  */
 stock bool DonutMatch_ParseMatchStartData(const any[] data, GameMode &mode, int &playerCount, int[] players, int[] teams)
@@ -897,12 +915,13 @@ stock bool DonutMatch_ParseMatchStartData(const any[] data, GameMode &mode, int 
 /**
  * Разбирает массив результата, переданный в DonutMatch_OnMatchEnd.
  *
- * @param data          Массив DonutMatch_OnMatchEnd размером не менее 3 ячеек.
+ * @param data          Массив DonutMatch_OnMatchEnd размером не менее 4 ячеек.
  * @param mode          На выходе — режим завершённого матча.
  * @param scoreT        На выходе — итоговый счёт террористов.
  * @param scoreCT       На выходе — итоговый счёт спецназа.
  * @return true после копирования значений.
- * @note Размер входного массива должен быть не менее 3 ячеек; функция его не проверяет.
+ * @note Формат War расположен в data[3]; функция его не копирует.
+ * @note Размер входного массива должен быть не менее 4 ячеек; функция его не проверяет.
  */
 stock bool DonutMatch_ParseMatchEndData(const any[] data, GameMode &mode, int &scoreT, int &scoreCT)
 {
