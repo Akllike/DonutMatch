@@ -38,6 +38,14 @@ enum MatchDatabaseStatus
     MatchDatabase_Unavailable   /**< Соединение не удалось или база недоступна. */
 };
 
+/** Причина текущей паузы матча. */
+enum MatchPauseReason
+{
+    Pause_Tactical = 0, /**< Запрошена игроком командой !pause. */
+    Pause_OvertimeVote, /**< Пауза для голосования за овертайм. */
+    Pause_API           /**< Запрошена через DonutMatch.SetPaused(). */
+};
+
 /** Формат War-матча или серии карт. */
 enum WarSeriesMode
 {
@@ -72,6 +80,18 @@ enum WarVetoAction
  * @param ready         true — игрок готов; false — не готов.
  */
 forward void DonutMatch_OnPlayerReady(int client, bool ready);
+
+/** Вызывается при начале или завершении активной паузы. */
+forward void DonutMatch_OnPauseChanged(bool paused, MatchPauseReason reason, int team, int requesterUserId);
+
+/** Вызывается при постановке tactical pause в очередь на следующий раунд.
+ *
+ * @param team Команда: 2 — T, 3 — CT; 0 при запросе через API.
+ * @param requesterUserId UserID игрока; 0 при запросе через API.
+ * @param apiRequest true, если пауза запрошена через native.
+ * @param pausesRemaining Сколько тактических пауз осталось у команды после этой заявки; 0 для API.
+ */
+forward void DonutMatch_OnPauseRequested(int team, int requesterUserId, bool apiRequest, int pausesRemaining);
 
 /**
  * Вызывается после обновления счёта раунда.
@@ -485,6 +505,17 @@ methodmap DonutMatch < Handle
      * @return true, если голосование активно; иначе false. Счётчики заполняются в любом случае.
      */
     public native bool GetOvertimeVote(int &yesVotes, int &noVotes, int &eligibleVotes);
+    /** Проверяет, активна ли сейчас пауза матча. */
+    public native bool IsPaused();
+    /** Проверяет, ожидается ли тактическая/API пауза на следующий раунд. */
+    public native bool IsPausePending();
+    /**
+     * Ставит 30-секундную паузу в очередь на следующий раунд или отменяет API-заявку.
+     *
+     * @param paused true — поставить паузу в очередь; false — отменить ожидающую API-заявку.
+     * @return true, если действие принято; false, если запрос конфликтует с текущим состоянием.
+     */
+    public native bool SetPaused(bool paused);
     /**
      * Запускает предусмотренную настройками процедуру овертайма при равном счёте.
      *
@@ -969,6 +1000,9 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("DonutMatch.MissingPlayersToStart");
     MarkNativeAsOptional("DonutMatch.CanStart");
     MarkNativeAsOptional("DonutMatch.GetOvertimeVote");
+    MarkNativeAsOptional("DonutMatch.IsPaused");
+    MarkNativeAsOptional("DonutMatch.IsPausePending");
+    MarkNativeAsOptional("DonutMatch.SetPaused");
     MarkNativeAsOptional("DonutMatch.StartOvertime");
     MarkNativeAsOptional("DonutMatch.DatabaseStatus");
     MarkNativeAsOptional("DonutMatch.LogEvent");

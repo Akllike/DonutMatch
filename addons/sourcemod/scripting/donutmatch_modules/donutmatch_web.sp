@@ -224,6 +224,8 @@ void RefreshFormatFromCore()
         return;
     }
 
+    // New API: this is the actual format selected for the current War match.
+    // Do not substitute WarSeriesMode(), which is only the active/next-series setting.
     if (NativeAvailable("DonutMatch.WarMatchFormat"))
     {
         int actualFormat = view_as<int>(g_Match.WarMatchFormat());
@@ -233,6 +235,7 @@ void RefreshFormatFromCore()
         return;
     }
 
+    // Compatibility with the older core API, which had no WarMatchFormat native.
     if (IsWarSeriesActiveSafe() && NativeAvailable("DonutMatch.WarSeriesMode"))
     {
         int seriesFormat = view_as<int>(g_Match.WarSeriesMode());
@@ -243,6 +246,7 @@ void RefreshFormatFromCore()
         }
     }
 
+    // Under the old API, a War match outside a multi-map series is Classic.
     if (!IsWarSeriesActiveSafe())
         g_iWarFormat = view_as<int>(WarSeries_Classic);
 }
@@ -487,6 +491,7 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
     else
     {
         ClearSeriesState();
+        // For old core binaries, no active War series means a Classic War match.
         if (g_iGameMode == view_as<int>(MODE_WAR) && !NativeAvailable("DonutMatch.WarMatchFormat"))
             g_iWarFormat = view_as<int>(WarSeries_Classic);
     }
@@ -520,7 +525,9 @@ public void DonutMatch_OnMatchReset(const char[] reason)
     strcopy(g_sStatus, sizeof(g_sStatus), "cancelled");
     strcopy(g_sEndReason, sizeof(g_sEndReason), reason);
     g_bMatchActive = false;
+    g_bSeriesActive = false;
     g_bSeriesVetoPreview = false;
+    g_bVetoActive = false;
     PublishSnapshot();
 }
 

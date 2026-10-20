@@ -43,6 +43,103 @@
         "en" "{green}[DonutMatch]{white} The match is tied. Vote on whether to start overtime."
         "ru" "{green}[DonutMatch]{white} Ничья. Проголосуйте, начинать ли овертайм."
     }
+    "PauseNotLive"
+    {
+        "en" "{green}[DonutMatch]{white} A tactical pause can only be requested during a live round."
+        "ru" "{green}[DonutMatch]{white} Тактическую паузу можно запросить только во время игрового раунда."
+    }
+    "PauseNotPlayer"
+    {
+        "en" "{green}[DonutMatch]{white} Only a player in the active match can request a tactical pause."
+        "ru" "{green}[DonutMatch]{white} Запросить тактическую паузу может только участник текущего матча."
+    }
+    "PauseAlreadyActive"
+    {
+        "en" "{green}[DonutMatch]{white} A pause is already active."
+        "ru" "{green}[DonutMatch]{white} Пауза уже активна."
+    }
+    "PauseAlreadyPending"
+    {
+        "en" "{green}[DonutMatch]{white} A pause is already queued for the next round."
+        "ru" "{green}[DonutMatch]{white} Пауза уже запрошена на следующий раунд."
+    }
+    "PauseNextRoundOnly"
+    {
+        "en" "{green}[DonutMatch]{white} Another pause can only be requested in the next round."
+        "ru" "{green}[DonutMatch]{white} Следующую паузу можно запросить только в следующем раунде."
+    }
+    "PauseLimitReached"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} Your team has used all {1} tactical pauses for this match."
+        "ru" "{green}[DonutMatch]{white} Ваша команда использовала все {1} тактические паузы на этот матч."
+    }
+    "PauseDisabled"
+    {
+        "en" "{green}[DonutMatch]{white} Tactical pauses are disabled."
+        "ru" "{green}[DonutMatch]{white} Тактические паузы отключены."
+    }
+    "PauseUnavailable"
+    {
+        "en" "{green}[DonutMatch]{white} A tactical pause cannot be requested right now."
+        "ru" "{green}[DonutMatch]{white} Сейчас нельзя запросить тактическую паузу."
+    }
+    "PauseRequestQueued"
+    {
+        #format "{1:s},{2:s},{3:d},{4:d}"
+        "en" "{green}[DonutMatch]{white} {1} requested a {3}-second pause for {2}. It will start next round. Pauses left: {4}."
+        "ru" "{green}[DonutMatch]{white} {1} запросил паузу на {3} секунд для команды {2}. Она начнётся в следующем раунде. Осталось: {4}."
+    }
+    "PauseRequestFromApi"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} The server queued a {1}-second pause for the next round."
+        "ru" "{green}[DonutMatch]{white} Сервер поставил паузу на {1} секунд в очередь на следующий раунд."
+    }
+    "TacticalPauseStarted"
+    {
+        #format "{1:s},{2:d}"
+        "en" "{green}[DonutMatch]{white} A {2}-second tactical pause for {1} has started."
+        "ru" "{green}[DonutMatch]{white} Началась тактическая пауза на {2} секунд для команды {1}."
+    }
+    "TacticalPauseStartedApi"
+    {
+        #format "{1:d}"
+        "en" "{green}[DonutMatch]{white} A {1}-second server pause has started."
+        "ru" "{green}[DonutMatch]{white} Началась серверная пауза на {1} секунд."
+    }
+    "TacticalPauseCountdown"
+    {
+        #format "{1:d}"
+        "en" "Tactical pause: {1} seconds remaining."
+        "ru" "Пауза: осталось {1} сек."
+    }
+    "MatchContinues"
+    {
+        "en" "{green}[DonutMatch]{white} The match continues!"
+        "ru" "{green}[DonutMatch]{white} Матч продолжается!"
+    }
+    "MatchContinuesHint"
+    {
+        "en" "The match continues!"
+        "ru" "Матч продолжается!"
+    }
+    "TacticalPauseEnded"
+    {
+        #format "{1:s}"
+        "en" "{green}[DonutMatch]{white} The tactical pause for {1} is over. Normal freeze time continues."
+        "ru" "{green}[DonutMatch]{white} Тактическая пауза команды {1} завершена. Продолжается обычное время заморозки."
+    }
+    "TacticalPauseEndedApi"
+    {
+        "en" "{green}[DonutMatch]{white} The server pause is over. Normal freeze time continues."
+        "ru" "{green}[DonutMatch]{white} Серверная пауза завершена. Продолжается обычное время заморозки."
+    }
+    "TacticalPauseCancelled"
+    {
+        "en" "{green}[DonutMatch]{white} The tactical pause was cancelled."
+        "ru" "{green}[DonutMatch]{white} Тактическая пауза отменена."
+    }
     "OvertimeVotePrompt"
     {
         "en" "Start overtime?"
@@ -96,12 +193,12 @@
     "AvailableCommand"
     {
         "en" "{green}[DonutMatch]{white} Available command: !info"
-        "ru" "{green}[DonutMatch]{white} Доступные команды - !info"
+        "ru" "{green}[DonutMatch]{white} Доступная команда: !info"
     }
     "AvailableCommands"
     {
-        "en" "{green}[DonutMatch]{white} Available commands: !ready !r !knife !stay !info"
-        "ru" "{green}[DonutMatch]{white} Доступные команды - !ready !r !knife !stay !info"
+        "en" "{green}[DonutMatch]{white} Commands: !ready/!r, !pause (live), !info, !score/!scores, !lastscore\n!damage, !money, !teamname (captains), !knife/!stay (War), !ask (Mix)"
+        "ru" "{green}[DonutMatch]{white} Команды: !ready/!r, !pause (во время матча), !info, !score/!scores, !lastscore\n!damage, !money, !teamname (капитаны), !knife/!stay (War), !ask (Mix)"
     }
     "LeftSubstitution"
     {
@@ -201,13 +298,13 @@
     }
     "DamageHits"
     {
-        #format "{1:s},{2:s},{3:d}"
+        #format "{1:s},{2:d},{3:d}"
         "en" "Damage: you -> {1}: {2} ({3} hits)"
         "ru" "Урон: вы -> {1}: {2} ({3} попад.)"
     }
     "DamageHits2"
     {
-        #format "{1:s},{2:s},{3:d}"
+        #format "{1:s},{2:d},{3:d}"
         "en" "Damage: {1} -> you: {2} ({3} hits)"
         "ru" "Урон: {1} -> вы: {2} ({3} попад.)"
     }
@@ -460,8 +557,8 @@
     }
     "TeamNameMixOnly"
     {
-        "en" "{green}[DonutMatch]{white} Team names can only be set by captains during a Mix."
-        "ru" "{green}[DonutMatch]{white} Названия команд могут менять капитаны только в режиме Mix."
+        "en" "{green}[DonutMatch]{white} Team names can only be changed by a captain during match setup or play."
+        "ru" "{green}[DonutMatch]{white} Название команды может изменить капитан во время подготовки или матча."
     }
     "TeamNameTooLong"
     {
@@ -608,8 +705,8 @@
     }
     "ReadyStatusN"
     {
-        "en" "DonutMatch: Ready status\n!ready - toggle your ready status (ready/not ready)\n-------------------------------------------------------"
-        "ru" "DonutMatch: Статус готовности\n!ready - команда готовности (готов/не готов)\n-------------------------------------------------------"
+        "en" "DonutMatch: Ready status\n!ready or !r - toggle your ready status (ready/not ready)\n-------------------------------------------------------"
+        "ru" "DonutMatch: Статус готовности\n!ready или !r - изменить готовность (готов/не готов)\n-------------------------------------------------------"
     }
     "ChooseSubstitute"
     {
@@ -914,6 +1011,11 @@
     {
         "en" "{green}[DonutMatch]{white} Teams cannot be changed during the format vote."
         "ru" "{green}[DonutMatch]{white} Во время голосования за формат нельзя менять команду."
+    }
+    "WarSeriesTeamsLocked"
+    {
+        "en" "{green}[DonutMatch]{white} Teams cannot be changed during a War series."
+        "ru" "{green}[DonutMatch]{white} Во время War-серии нельзя менять команду."
     }
     "Reset_WarModeVoteMismatch"
     {
