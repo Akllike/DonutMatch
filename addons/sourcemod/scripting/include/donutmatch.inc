@@ -383,7 +383,7 @@ methodmap DonutMatch < Handle
      * Останавливает текущий матч и сбрасывает его состояние.
      *
      * @param reason Причина остановки, передаваемая в событие сброса.
-     * @return true после выполнения сброса состояния матча.
+    * @return true, если запрос сброса обработан; результат не указывает, был ли активен матч.
      */
     public native bool Stop(const char[] reason);
     /**
@@ -411,6 +411,7 @@ methodmap DonutMatch < Handle
      *
      * @param client Индекс игрока.
      * @return true, если игрок входит в состав.
+     * @note Эквивалентно MatchPlayer(client).IsInRoster(); этот метод оставлен как форма с явным client.
      */
     public native bool IsPlayerInMatch(int client);
     /**
@@ -569,8 +570,8 @@ methodmap DonutMatch < Handle
      */
     public native bool LastTeamName(int team, char[] buffer, int size);
     /**
-        * Возвращает формат активной серии или настроенный формат следующей серии, если серия неактивна.
-        * @return WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
+        * Возвращает формат активной серии или следующий формат War, если серия неактивна.
+        * @return WarSeries_Classic по умолчанию, либо WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
         * @note Не определяет формат выбранного матча War; для этого используйте WarMatchFormat().
      */
     public native WarSeriesMode WarSeriesMode();
@@ -1010,6 +1011,25 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("DonutMatch.LastMatchMode");
     MarkNativeAsOptional("DonutMatch.GetLastMatchScore");
     MarkNativeAsOptional("DonutMatch.LastTeamName");
+    MarkNativeAsOptional("DonutMatch.WarMatchFormat");
+    MarkNativeAsOptional("DonutMatch.LastWarMatchFormat");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMode");
+    MarkNativeAsOptional("DonutMatch.IsWarSeriesActive");
+    MarkNativeAsOptional("DonutMatch.WarSeriesWins");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapsToWin");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapIndex");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoAction");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoTeam");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoCaptain");
+    MarkNativeAsOptional("DonutMatch.GetWarVetoProgress");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapPool");
+    MarkNativeAsOptional("DonutMatch.WarSeriesAvailableMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesBannedMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesPickedMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMaps");
+    MarkNativeAsOptional("DonutMatch.SetWarSeriesMode");
+    MarkNativeAsOptional("DonutMatch.SetWarSeriesMapPool");
+    MarkNativeAsOptional("DonutMatch.ChooseWarVetoMap");
     MarkNativeAsOptional("MatchPlayer.IsValid");
     MarkNativeAsOptional("MatchPlayer.IsReady");
     MarkNativeAsOptional("MatchPlayer.SetReady");

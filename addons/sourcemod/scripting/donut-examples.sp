@@ -45,6 +45,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     MarkNativeAsOptional("DonutMatch.LastMatchMode");
     MarkNativeAsOptional("DonutMatch.GetLastMatchScore");
     MarkNativeAsOptional("DonutMatch.LastTeamName");
+    MarkNativeAsOptional("DonutMatch.WarMatchFormat");
+    MarkNativeAsOptional("DonutMatch.LastWarMatchFormat");
     MarkNativeAsOptional("DonutMatch.WarSeriesMode");
     MarkNativeAsOptional("DonutMatch.IsWarSeriesActive");
     MarkNativeAsOptional("DonutMatch.WarSeriesWins");
@@ -663,7 +665,7 @@ public void DonutMatch_OnRoundScore(int scoreT, int scoreCT, int winnerTeam)
 public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
 {
     // Используем stock-парсер API: он раскладывает фиксированный массив на поля.
-    if (dataSize != 2 + MAXPLAYERS * 2)
+    if (dataSize != 3 + MAXPLAYERS * 2)
     {
         PrintToServer("[DM API forward] MatchStart: неверный размер массива: %d", dataSize);
         return;
@@ -679,7 +681,9 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
 
     char modeName[16];
     DonutMatch_GetModeName(mode, modeName, sizeof(modeName));
-    PrintToServer("[DM API forward] MatchStart: mode=%s players=%d", modeName, playerCount);
+    WarSeriesMode warFormat = view_as<WarSeriesMode>(data[2 + MAXPLAYERS * 2]);
+    PrintToServer("[DM API forward] MatchStart: mode=%s warFormat=%d players=%d",
+        modeName, warFormat, playerCount);
     for (int i = 0; i < playerCount; i++)
     {
         PrintToServer("  player=%d team=%d", players[i], teams[i]);
@@ -689,7 +693,7 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
 public void DonutMatch_OnMatchEnd(const any[] data, int dataSize)
 {
     // Парсим результат матча: режим и финальный счет T:CT.
-    if (dataSize != 3)
+    if (dataSize != 4)
     {
         PrintToServer("[DM API forward] MatchEnd: неверный размер массива: %d", dataSize);
         return;
@@ -704,7 +708,9 @@ public void DonutMatch_OnMatchEnd(const any[] data, int dataSize)
 
     char modeName[16];
     DonutMatch_GetModeName(mode, modeName, sizeof(modeName));
-    PrintToServer("[DM API forward] MatchEnd: mode=%s score=%d:%d", modeName, scoreT, scoreCT);
+    WarSeriesMode warFormat = view_as<WarSeriesMode>(data[3]);
+    PrintToServer("[DM API forward] MatchEnd: mode=%s score=%d:%d warFormat=%d",
+        modeName, scoreT, scoreCT, warFormat);
 }
 
 public void DonutMatch_OnMatchReset(const char[] reason)

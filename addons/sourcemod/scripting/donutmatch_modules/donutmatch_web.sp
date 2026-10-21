@@ -3,9 +3,49 @@
 #include <donutmatch>
 #include <ripext>
 
-#define PLUGIN_VERSION "0.2.0"
+#define PLUGIN_VERSION "0.2.3"
 #define MAX_SERIES_MAPS 32
 #define MAX_MAP_NAME 64
+
+public Plugin myinfo =
+{
+    name = "DonutMatch Web Bridge",
+    author = "phenom",
+    description = "Publishes the current DonutMatch API state to the web dashboard",
+    version = PLUGIN_VERSION,
+    url = "https://t.me/phenom1337"
+};
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    MarkNativeAsOptional("DonutMatch.IsLive");
+    MarkNativeAsOptional("DonutMatch.State");
+    MarkNativeAsOptional("DonutMatch.Mode");
+    MarkNativeAsOptional("DonutMatch.TeamName");
+    MarkNativeAsOptional("DonutMatch.LastTeamName");
+    MarkNativeAsOptional("DonutMatch.TeamScore");
+    MarkNativeAsOptional("DonutMatch.TeamPlayers");
+    MarkNativeAsOptional("DonutMatch.WarMatchFormat");
+    MarkNativeAsOptional("DonutMatch.LastWarMatchFormat");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMode");
+    MarkNativeAsOptional("DonutMatch.IsWarSeriesActive");
+    MarkNativeAsOptional("DonutMatch.WarSeriesWins");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapsToWin");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMapIndex");
+    MarkNativeAsOptional("DonutMatch.WarSeriesMaps");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoAction");
+    MarkNativeAsOptional("DonutMatch.CurrentWarVetoTeam");
+    MarkNativeAsOptional("DonutMatch.GetWarVetoProgress");
+    MarkNativeAsOptional("DonutMatch.WarSeriesAvailableMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesBannedMaps");
+    MarkNativeAsOptional("DonutMatch.WarSeriesPickedMaps");
+    MarkNativeAsOptional("MatchPlayer.IsValid");
+    MarkNativeAsOptional("MatchPlayer.Name");
+    MarkNativeAsOptional("MatchPlayer.AuthId");
+    MarkNativeAsOptional("MatchPlayer.Frags");
+    MarkNativeAsOptional("MatchPlayer.Deaths");
+    return APLRes_Success;
+}
 
 ConVar g_CvarApiUrl;
 ConVar g_CvarToken;
@@ -43,6 +83,8 @@ int g_iSeriesMapsToWin;
 int g_iSeriesMapIndex; // 1-based for the API/frontend
 char g_sSeriesTeamAName[128];
 char g_sSeriesTeamBName[128];
+char g_sCachedTeamCTName[128];
+char g_sCachedTeamTName[128];
 char g_sSeriesMaps[MAX_SERIES_MAPS][MAX_MAP_NAME];
 int g_iSeriesMapCount;
 
@@ -57,54 +99,29 @@ char g_sVetoPicked[MAX_SERIES_MAPS][MAX_MAP_NAME];
 int g_iVetoAvailableCount;
 int g_iVetoBannedCount;
 int g_iVetoPickedCount;
+
+int g_iSeriesResultCount;
+int g_iResultMapIndex[MAX_SERIES_MAPS];
+char g_sResultMap[MAX_SERIES_MAPS][MAX_MAP_NAME];
+int g_iResultScoreT[MAX_SERIES_MAPS];
+int g_iResultScoreCT[MAX_SERIES_MAPS];
+int g_iResultTeamAScore[MAX_SERIES_MAPS];
+int g_iResultTeamBScore[MAX_SERIES_MAPS];
+int g_iResultWinner[MAX_SERIES_MAPS];
+int g_iResultTeamAWins[MAX_SERIES_MAPS];
+int g_iResultTeamBWins[MAX_SERIES_MAPS];
 Handle g_hStartupSyncTimer;
-
-public Plugin myinfo =
-{
-    name = "DonutMatch Web Bridge",
-    author = "phenom",
-    description = "Publishes the current DonutMatch API state to the web dashboard",
-    version = PLUGIN_VERSION,
-    url = "https://t.me/phenom1337"
-};
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-    MarkNativeAsOptional("DonutMatch.IsLive");
-    MarkNativeAsOptional("DonutMatch.State");
-    MarkNativeAsOptional("DonutMatch.Mode");
-    MarkNativeAsOptional("DonutMatch.TeamName");
-    MarkNativeAsOptional("DonutMatch.TeamScore");
-    MarkNativeAsOptional("DonutMatch.TeamPlayers");
-    MarkNativeAsOptional("DonutMatch.WarMatchFormat");
-    MarkNativeAsOptional("DonutMatch.LastWarMatchFormat");
-    MarkNativeAsOptional("DonutMatch.WarSeriesMode");
-    MarkNativeAsOptional("DonutMatch.IsWarSeriesActive");
-    MarkNativeAsOptional("DonutMatch.WarSeriesWins");
-    MarkNativeAsOptional("DonutMatch.WarSeriesMapsToWin");
-    MarkNativeAsOptional("DonutMatch.WarSeriesMapIndex");
-    MarkNativeAsOptional("DonutMatch.WarSeriesMaps");
-    MarkNativeAsOptional("DonutMatch.CurrentWarVetoAction");
-    MarkNativeAsOptional("DonutMatch.CurrentWarVetoTeam");
-    MarkNativeAsOptional("DonutMatch.GetWarVetoProgress");
-    MarkNativeAsOptional("DonutMatch.WarSeriesAvailableMaps");
-    MarkNativeAsOptional("DonutMatch.WarSeriesBannedMaps");
-    MarkNativeAsOptional("DonutMatch.WarSeriesPickedMaps");
-    MarkNativeAsOptional("MatchPlayer.IsValid");
-    MarkNativeAsOptional("MatchPlayer.Name");
-    MarkNativeAsOptional("MatchPlayer.Frags");
-    MarkNativeAsOptional("MatchPlayer.Deaths");
-    return APLRes_Success;
-}
+Handle g_hStatsSnapshotTimer;
 
 public void OnPluginStart()
 {
-    g_CvarApiUrl = CreateConVar("sm_donutmatch_web_url", "", "DonutMatch API эвент сервер", FCVAR_PROTECTED);
-    g_CvarToken = CreateConVar("sm_donutmatch_web_token", "", "DonutMatch API токен (если имеется)", FCVAR_PROTECTED);
-    g_CvarServerId = CreateConVar("sm_donutmatch_web_server_id", "css-server-1", "Unique ID для отображения игрового сервера", FCVAR_PROTECTED);
+    g_CvarApiUrl = CreateConVar("sm_donutmatch_web_url", "", "DonutMatch API event endpoint", FCVAR_PROTECTED);
+    g_CvarToken = CreateConVar("sm_donutmatch_web_token", "", "DonutMatch API ingest token", FCVAR_PROTECTED);
+    g_CvarServerId = CreateConVar("sm_donutmatch_web_server_id", "css-server-1", "Stable unique ID for this game server", FCVAR_PROTECTED);
     AutoExecConfig(true, "donutmatch_web");
     ReadConfig();
     RegAdminCmd("sm_donutmatch_web_sync", Command_ForceSync, ADMFLAG_ROOT, "Publish the current DonutMatch snapshot to the website");
+    HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
     LogMessage("DonutMatch Web Bridge %s loaded; waiting for the DonutMatch API", PLUGIN_VERSION);
     ScheduleStartupSync(2.0);
 }
@@ -120,6 +137,22 @@ public void OnMapStart()
     ScheduleStartupSync(4.0);
 }
 
+public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+    if (!g_bMatchActive || g_hStatsSnapshotTimer != null)
+        return;
+    g_hStatsSnapshotTimer = CreateTimer(0.25, TimerPublishPlayerStats, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action TimerPublishPlayerStats(Handle timer)
+{
+    if (timer == g_hStatsSnapshotTimer)
+        g_hStatsSnapshotTimer = null;
+    if (g_bMatchActive)
+        PublishSnapshot();
+    return Plugin_Stop;
+}
+
 public void OnLibraryAdded(const char[] name)
 {
     if (StrEqual(name, "donutmatch"))
@@ -132,19 +165,7 @@ public void OnLibraryAdded(const char[] name)
 public void OnLibraryRemoved(const char[] name)
 {
     if (StrEqual(name, "donutmatch"))
-    {
         LogMessage("DonutMatch library removed; waiting for it to return");
-        if (g_bMatchActive || g_bSeriesVetoPreview || g_bSeriesActive)
-        {
-            g_bMatchActive = false;
-            g_bSeriesActive = false;
-            g_bSeriesVetoPreview = false;
-            g_bVetoActive = false;
-            strcopy(g_sStatus, sizeof(g_sStatus), "cancelled");
-            strcopy(g_sEndReason, sizeof(g_sEndReason), "donutmatch_unloaded");
-            PublishSnapshot();
-        }
-    }
 }
 
 void ReadConfig()
@@ -160,6 +181,86 @@ void ReadConfig()
 bool NativeAvailable(const char[] name)
 {
     return GetFeatureStatus(FeatureType_Native, name) == FeatureStatus_Available;
+}
+
+bool IsGenericSideName(const char[] name)
+{
+    return StrEqual(name, "Спецназ", false)
+        || StrEqual(name, "Террористы", false)
+        || StrEqual(name, "Terrorists", false)
+        || StrEqual(name, "Counter-Terrorists", false)
+        || StrEqual(name, "CT", false)
+        || StrEqual(name, "T", false)
+        || StrEqual(name, "Team A", false)
+        || StrEqual(name, "Team B", false);
+}
+
+void RememberTeamName(int team, const char[] name)
+{
+    if ((team != CS_TEAM_CT && team != CS_TEAM_T) || name[0] == '\0' || IsGenericSideName(name))
+        return;
+
+    if (team == CS_TEAM_CT)
+        strcopy(g_sCachedTeamCTName, sizeof(g_sCachedTeamCTName), name);
+    else
+        strcopy(g_sCachedTeamTName, sizeof(g_sCachedTeamTName), name);
+}
+
+void CaptureCurrentTeamNames()
+{
+    if (!NativeAvailable("DonutMatch.TeamName"))
+        return;
+
+    char name[128];
+    if (g_Match.TeamName(CS_TEAM_CT, name, sizeof(name)))
+        RememberTeamName(CS_TEAM_CT, name);
+    if (g_Match.TeamName(CS_TEAM_T, name, sizeof(name)))
+        RememberTeamName(CS_TEAM_T, name);
+}
+
+void CaptureLastMatchTeamNames()
+{
+    if (!NativeAvailable("DonutMatch.LastTeamName"))
+        return;
+
+    char name[128];
+    if (g_Match.LastTeamName(CS_TEAM_CT, name, sizeof(name)))
+        RememberTeamName(CS_TEAM_CT, name);
+    if (g_Match.LastTeamName(CS_TEAM_T, name, sizeof(name)))
+        RememberTeamName(CS_TEAM_T, name);
+}
+
+void ResolveTeamNames(char[] ctName, int ctMax, char[] tName, int tMax)
+{
+    CaptureCurrentTeamNames();
+    if (StrEqual(g_sStatus, "finished") || StrEqual(g_sStatus, "cancelled"))
+        CaptureLastMatchTeamNames();
+
+    ctName[0] = '\0';
+    tName[0] = '\0';
+    if (g_sCachedTeamCTName[0] != '\0')
+        strcopy(ctName, ctMax, g_sCachedTeamCTName);
+    if (g_sCachedTeamTName[0] != '\0')
+        strcopy(tName, tMax, g_sCachedTeamTName);
+
+    if (IsBestOfFormat(g_iWarFormat))
+    {
+        CaptureSeriesTeamNames();
+        if (g_sSeriesTeamAName[0] != '\0' && g_sSeriesTeamBName[0] != '\0')
+        {
+            // Team A starts T on map 1; sides alternate on each successive map.
+            if (g_iSeriesMapIndex <= 1 || (g_iSeriesMapIndex % 2) == 1)
+            {
+                strcopy(tName, tMax, g_sSeriesTeamAName);
+                strcopy(ctName, ctMax, g_sSeriesTeamBName);
+            }
+            else
+            {
+                strcopy(ctName, ctMax, g_sSeriesTeamAName);
+                strcopy(tName, tMax, g_sSeriesTeamBName);
+            }
+        }
+    }
 }
 
 bool IsKnownWarFormat(int format)
@@ -229,10 +330,11 @@ void RefreshFormatFromCore()
     if (NativeAvailable("DonutMatch.WarMatchFormat"))
     {
         int actualFormat = view_as<int>(g_Match.WarMatchFormat());
-        g_iWarFormat = IsKnownWarFormat(actualFormat)
-            ? actualFormat
-            : view_as<int>(WarSeries_Unknown);
-        return;
+        if (IsKnownWarFormat(actualFormat))
+        {
+            g_iWarFormat = actualFormat;
+            return;
+        }
     }
 
     // Compatibility with the older core API, which had no WarMatchFormat native.
@@ -282,6 +384,19 @@ void ClearSeriesState()
     g_iVetoAvailableCount = 0;
     g_iVetoBannedCount = 0;
     g_iVetoPickedCount = 0;
+    g_iSeriesResultCount = 0;
+    for (int i = 0; i < MAX_SERIES_MAPS; i++)
+    {
+        g_iResultMapIndex[i] = 0;
+        g_sResultMap[i][0] = '\0';
+        g_iResultScoreT[i] = 0;
+        g_iResultScoreCT[i] = 0;
+        g_iResultTeamAScore[i] = 0;
+        g_iResultTeamBScore[i] = 0;
+        g_iResultWinner[i] = view_as<int>(WarSeries_None);
+        g_iResultTeamAWins[i] = 0;
+        g_iResultTeamBWins[i] = 0;
+    }
     for (int i = 0; i < MAX_SERIES_MAPS; i++)
     {
         g_sSeriesMaps[i][0] = '\0';
@@ -297,16 +412,35 @@ void CaptureSeriesTeamNames()
         return;
 
     int teamASide = CS_TEAM_T;
-    if (g_iSeriesMapIndex > 1 && g_iSeriesMapIndex % 2 == 0)
+    if (g_iSeriesMapIndex > 1 && (g_iSeriesMapIndex % 2) == 0)
         teamASide = CS_TEAM_CT;
     int teamBSide = (teamASide == CS_TEAM_T) ? CS_TEAM_CT : CS_TEAM_T;
+    char name[128];
 
-    if (g_sSeriesTeamAName[0] == '\0')
-        g_Match.TeamName(teamASide, g_sSeriesTeamAName, sizeof(g_sSeriesTeamAName));
-    if (g_sSeriesTeamBName[0] == '\0')
-        g_Match.TeamName(teamBSide, g_sSeriesTeamBName, sizeof(g_sSeriesTeamBName));
+    if (g_sSeriesTeamAName[0] == '\0' && g_Match.TeamName(teamASide, name, sizeof(name))
+        && name[0] != '\0' && !IsGenericSideName(name))
+        strcopy(g_sSeriesTeamAName, sizeof(g_sSeriesTeamAName), name);
+    if (g_sSeriesTeamBName[0] == '\0' && g_Match.TeamName(teamBSide, name, sizeof(name))
+        && name[0] != '\0' && !IsGenericSideName(name))
+        strcopy(g_sSeriesTeamBName, sizeof(g_sSeriesTeamBName), name);
+
+    // Prefer the side-name cache captured during the match if the core currently
+    // exposes generic labels (for example during the changelevel/reset callback).
+    if (teamASide == CS_TEAM_T)
+    {
+        if (g_sSeriesTeamAName[0] == '\0' && g_sCachedTeamTName[0] != '\0')
+            strcopy(g_sSeriesTeamAName, sizeof(g_sSeriesTeamAName), g_sCachedTeamTName);
+        if (g_sSeriesTeamBName[0] == '\0' && g_sCachedTeamCTName[0] != '\0')
+            strcopy(g_sSeriesTeamBName, sizeof(g_sSeriesTeamBName), g_sCachedTeamCTName);
+    }
+    else
+    {
+        if (g_sSeriesTeamAName[0] == '\0' && g_sCachedTeamCTName[0] != '\0')
+            strcopy(g_sSeriesTeamAName, sizeof(g_sSeriesTeamAName), g_sCachedTeamCTName);
+        if (g_sSeriesTeamBName[0] == '\0' && g_sCachedTeamTName[0] != '\0')
+            strcopy(g_sSeriesTeamBName, sizeof(g_sSeriesTeamBName), g_sCachedTeamTName);
+    }
 }
-
 void RefreshWarSeriesData()
 {
     if (!IsWarSeriesActiveSafe())
@@ -373,6 +507,14 @@ void CaptureSeriesMaps()
     StoreMapList(g_Match.WarSeriesMaps(), g_sSeriesMaps, g_iSeriesMapCount);
 }
 
+bool IsContinuingSeries()
+{
+    return g_sMatchId[0] != '\0'
+        && IsBestOfFormat(g_iWarFormat)
+        && g_bSeriesActive
+        && IsWarSeriesActiveSafe();
+}
+
 void ScheduleStartupSync(float delay)
 {
     if (g_hStartupSyncTimer != null)
@@ -411,7 +553,7 @@ void SyncCurrentCoreState()
 
     if (live)
     {
-        if (g_sMatchId[0] == '\0' || (!g_bMatchActive && !g_bSeriesVetoPreview))
+        if (g_sMatchId[0] == '\0' || (!g_bMatchActive && !g_bSeriesVetoPreview && !IsContinuingSeries()))
             NewMatchId();
         g_bSeriesVetoPreview = false;
         g_bMatchActive = true;
@@ -473,8 +615,14 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
     SetModeAndFormat(mode, warFormat);
 
     bool useVetoPreviewId = g_bSeriesVetoPreview && g_sMatchId[0] != '\0';
-    if (!useVetoPreviewId)
+    bool continuingSeries = IsBestOfFormat(g_iWarFormat) && g_bSeriesActive
+        && IsWarSeriesActiveSafe() && g_sMatchId[0] != '\0';
+    if (!useVetoPreviewId && !continuingSeries)
+    {
         NewMatchId();
+        g_sCachedTeamCTName[0] = '\0';
+        g_sCachedTeamTName[0] = '\0';
+    }
     g_bSeriesVetoPreview = false;
     g_bVetoActive = false;
     g_bMatchActive = true;
@@ -483,6 +631,7 @@ public void DonutMatch_OnMatchStart(const any[] data, int dataSize)
     g_iLastScoreCT = 0;
     g_sEndReason[0] = '\0';
     strcopy(g_sStatus, sizeof(g_sStatus), "live");
+    CaptureCurrentTeamNames();
 
     if (IsWarSeriesActiveSafe())
     {
@@ -511,23 +660,54 @@ public void DonutMatch_OnMatchEnd(const any[] data, int dataSize)
     else
         RefreshFormatFromCore();
 
+    CaptureCurrentTeamNames();
+    CaptureLastMatchTeamNames();
     strcopy(g_sStatus, sizeof(g_sStatus), "finished");
     g_sEndReason[0] = '\0';
     g_bMatchActive = false;
     PublishSnapshot();
 }
 
+public void DonutMatch_OnTeamNameChanged(int team, const char[] name, int actor)
+{
+    RememberTeamName(team, name);
+    if (g_bSeriesActive && name[0] != '\0' && !IsGenericSideName(name))
+    {
+        int teamASide = ((g_iSeriesMapIndex <= 1) || (g_iSeriesMapIndex % 2) == 1) ? CS_TEAM_T : CS_TEAM_CT;
+        if (team == teamASide)
+            strcopy(g_sSeriesTeamAName, sizeof(g_sSeriesTeamAName), name);
+        else if (team == ((teamASide == CS_TEAM_T) ? CS_TEAM_CT : CS_TEAM_T))
+            strcopy(g_sSeriesTeamBName, sizeof(g_sSeriesTeamBName), name);
+    }
+    if (g_bMatchActive || g_bSeriesVetoPreview)
+        PublishSnapshot();
+}
+
 public void DonutMatch_OnMatchReset(const char[] reason)
 {
-    if (!g_bMatchActive && !g_bSeriesVetoPreview)
+    // The core fires a reset while loading the next map of a BO series.
+    // The map result was already published by OnWarSeriesMapEnd, so don't
+    // turn the ongoing series into a cancelled archive entry during changelevel.
+    if (g_bSeriesActive && StrEqual(reason, "Смена карты."))
+    {
+        g_bMatchActive = false;
         return;
+    }
 
+    if (!g_bMatchActive && !g_bSeriesVetoPreview)
+    {
+        // A real core reset may cancel/clear a series; don't leave our cached flag set.
+        if (!IsWarSeriesActiveSafe())
+            g_bSeriesActive = false;
+        return;
+    }
+
+    CaptureCurrentTeamNames();
+    CaptureLastMatchTeamNames();
     strcopy(g_sStatus, sizeof(g_sStatus), "cancelled");
     strcopy(g_sEndReason, sizeof(g_sEndReason), reason);
     g_bMatchActive = false;
-    g_bSeriesActive = false;
     g_bSeriesVetoPreview = false;
-    g_bVetoActive = false;
     PublishSnapshot();
 }
 
@@ -571,16 +751,19 @@ public void DonutMatch_OnStateChanged(MatchState oldState, MatchState newState)
     PublishSnapshot();
 }
 
-public void DonutMatch_OnWarSeriesStart(WarSeriesMode mode, int mapsToWin, int bestOf)
+public void DonutMatch_OnWarSeriesStart(WarSeriesMode mode, int mapsToWin, int mapCount)
 {
     ClearSeriesState();
     g_iGameMode = view_as<int>(MODE_WAR);
     g_iWarFormat = view_as<int>(mode);
     g_bSeriesActive = true;
     g_bSeriesScoreAvailable = IsBestOfFormat(g_iWarFormat);
-    g_iSeriesBestOf = bestOf;
+    g_iSeriesBestOf = mapCount;
     g_iSeriesMapsToWin = mapsToWin;
     g_iSeriesMapIndex = 1;
+    g_sCachedTeamCTName[0] = '\0';
+    g_sCachedTeamTName[0] = '\0';
+    CaptureCurrentTeamNames();
     CaptureSeriesTeamNames();
 
     NewMatchId();
@@ -624,6 +807,41 @@ public void DonutMatch_OnWarSeriesMapEnd(int mapIndex, const char[] mapName, War
     g_iSeriesMapIndex = mapIndex + 1;
     g_iLastScoreT = scoreT;
     g_iLastScoreCT = scoreCT;
+
+    if (mapIndex >= 0 && mapIndex < MAX_SERIES_MAPS)
+    {
+        int slot = mapIndex;
+        if (slot >= g_iSeriesResultCount)
+            g_iSeriesResultCount = slot + 1;
+        g_iResultMapIndex[slot] = mapIndex + 1;
+        strcopy(g_sResultMap[slot], sizeof(g_sResultMap[]), mapName);
+        g_iResultScoreT[slot] = scoreT;
+        g_iResultScoreCT[slot] = scoreCT;
+        // CS side is not a stable team identity: captain side-pick/knife can alter
+        // which War team plays CT/T. The core's winner enum is the authoritative
+        // identity, so map the high/low score to Team A/B via that winner.
+        if (winner == WarSeries_TeamA)
+        {
+            g_iResultTeamAScore[slot] = (scoreT >= scoreCT) ? scoreT : scoreCT;
+            g_iResultTeamBScore[slot] = (scoreT >= scoreCT) ? scoreCT : scoreT;
+        }
+        else if (winner == WarSeries_TeamB)
+        {
+            g_iResultTeamAScore[slot] = (scoreT <= scoreCT) ? scoreT : scoreCT;
+            g_iResultTeamBScore[slot] = (scoreT <= scoreCT) ? scoreCT : scoreT;
+        }
+        else
+        {
+            // Tied map: there is no winner to identify the sides; preserve raw score order.
+            bool teamAOnT = (mapIndex % 2) == 0;
+            g_iResultTeamAScore[slot] = teamAOnT ? scoreT : scoreCT;
+            g_iResultTeamBScore[slot] = teamAOnT ? scoreCT : scoreT;
+        }
+        g_iResultWinner[slot] = view_as<int>(winner);
+        g_iResultTeamAWins[slot] = teamAWins;
+        g_iResultTeamBWins[slot] = teamBWins;
+    }
+
     g_bMatchActive = false;
     g_bSeriesActive = IsWarSeriesActiveSafe();
     if (g_bSeriesActive)
@@ -672,20 +890,15 @@ void PublishSnapshot()
 
     char map[PLATFORM_MAX_PATH], ctName[128], tName[128], timestamp[32];
     GetCurrentMap(map, sizeof(map));
-    strcopy(ctName, sizeof(ctName), "Спецназ");
-    strcopy(tName, sizeof(tName), "Террористы");
-    if (NativeAvailable("DonutMatch.TeamName"))
-    {
-        char name[128];
-        if (g_Match.TeamName(CS_TEAM_CT, name, sizeof(name)) && name[0] != '\0')
-            strcopy(ctName, sizeof(ctName), name);
-        if (g_Match.TeamName(CS_TEAM_T, name, sizeof(name)) && name[0] != '\0')
-            strcopy(tName, sizeof(tName), name);
-    }
+    ResolveTeamNames(ctName, sizeof(ctName), tName, sizeof(tName));
 
-    if (LibraryExists("donutmatch") && g_iGameMode == view_as<int>(MODE_WAR))
+    // The core clears its active-series state before/while the terminal forwards run.
+    // Preserve the format captured from DonutMatch_OnMatchEnd / OnWarSeriesEnd so a
+    // completed BO3/BO5 snapshot cannot be downgraded to Classic during serialization.
+    bool terminalSnapshot = StrEqual(g_sStatus, "finished") || StrEqual(g_sStatus, "cancelled");
+    if (g_iGameMode == view_as<int>(MODE_WAR) && !terminalSnapshot)
         RefreshFormatFromCore();
-    if (g_bSeriesActive)
+    if (g_bSeriesActive && !terminalSnapshot)
         RefreshWarSeriesData();
     if (g_bHasVetoData && (g_bSeriesVetoPreview || g_bSeriesActive))
         RefreshVetoLists();
@@ -695,6 +908,8 @@ void PublishSnapshot()
 
     JSONObject match = new JSONObject();
     match.SetString("id", g_sMatchId);
+    if (IsBestOfFormat(g_iWarFormat) || g_bSeriesActive || g_bSeriesVetoPreview || g_iSeriesResultCount > 0)
+        match.SetString("series_id", g_sMatchId);
     match.SetString("status", g_sStatus);
     match.SetString("map", map);
     match.SetString("mode", FormatGameMode(g_iGameMode));
@@ -725,29 +940,66 @@ void PublishSnapshot()
     match.SetInt("round", g_iRound);
     match.SetString("updated_at", timestamp);
     match.SetBool("series_active", g_bSeriesActive);
+    if (g_sSeriesTeamAName[0] != '\0')
+        match.SetString("series_team_a_name", g_sSeriesTeamAName);
+    if (g_sSeriesTeamBName[0] != '\0')
+        match.SetString("series_team_b_name", g_sSeriesTeamBName);
     if (g_bSeriesScoreAvailable && IsBestOfFormat(g_iWarFormat))
     {
         match.SetInt("series_map_index", g_iSeriesMapIndex);
         match.SetInt("series_best_of", g_iSeriesBestOf > 0 ? g_iSeriesBestOf : BestOfFromFormat(g_iWarFormat));
         match.SetInt("series_maps_to_win", g_iSeriesMapsToWin);
 
-        JSONObject seriesScore = new JSONObject();
-        JSONObject seriesTeamA = new JSONObject();
-        seriesTeamA.SetString("name", g_sSeriesTeamAName[0] ? g_sSeriesTeamAName : "Команда A");
-        seriesTeamA.SetInt("wins", g_iSeriesWinsA);
-        JSONObject seriesTeamB = new JSONObject();
-        seriesTeamB.SetString("name", g_sSeriesTeamBName[0] ? g_sSeriesTeamBName : "Команда B");
-        seriesTeamB.SetInt("wins", g_iSeriesWinsB);
-        seriesScore.Set("team_a", seriesTeamA);
-        seriesScore.Set("team_b", seriesTeamB);
-        match.Set("series_score", seriesScore);
-        delete seriesTeamA;
-        delete seriesTeamB;
-        delete seriesScore;
+        // A score object must never contain invented labels.
+        if (g_sSeriesTeamAName[0] != '\0' && g_sSeriesTeamBName[0] != '\0')
+        {
+            JSONObject seriesScore = new JSONObject();
+            JSONObject seriesTeamA = new JSONObject();
+            seriesTeamA.SetString("name", g_sSeriesTeamAName);
+            seriesTeamA.SetInt("wins", g_iSeriesWinsA);
+            JSONObject seriesTeamB = new JSONObject();
+            seriesTeamB.SetString("name", g_sSeriesTeamBName);
+            seriesTeamB.SetInt("wins", g_iSeriesWinsB);
+            seriesScore.Set("team_a", seriesTeamA);
+            seriesScore.Set("team_b", seriesTeamB);
+            match.Set("series_score", seriesScore);
+            delete seriesTeamA;
+            delete seriesTeamB;
+            delete seriesScore;
+        }
 
         JSONArray seriesMaps = BuildMapArray(g_sSeriesMaps, g_iSeriesMapCount);
         match.Set("series_maps", seriesMaps);
         delete seriesMaps;
+    }
+
+    if (g_iSeriesResultCount > 0)
+    {
+        JSONArray results = new JSONArray();
+        for (int i = 0; i < g_iSeriesResultCount && i < MAX_SERIES_MAPS; i++)
+        {
+            if (g_sResultMap[i][0] == '\0')
+                continue;
+            JSONObject item = new JSONObject();
+            item.SetInt("map_index", g_iResultMapIndex[i]);
+            item.SetString("map", g_sResultMap[i]);
+            item.SetInt("score_t", g_iResultScoreT[i]);
+            item.SetInt("score_ct", g_iResultScoreCT[i]);
+            item.SetInt("team_a_score", g_iResultTeamAScore[i]);
+            item.SetInt("team_b_score", g_iResultTeamBScore[i]);
+            if (g_iResultWinner[i] == view_as<int>(WarSeries_TeamA))
+                item.SetString("winner", "team_a");
+            else if (g_iResultWinner[i] == view_as<int>(WarSeries_TeamB))
+                item.SetString("winner", "team_b");
+            else
+                item.SetString("winner", "draw");
+            item.SetInt("team_a_wins", g_iResultTeamAWins[i]);
+            item.SetInt("team_b_wins", g_iResultTeamBWins[i]);
+            results.Push(item);
+            delete item;
+        }
+        match.Set("series_results", results);
+        delete results;
     }
 
     if (g_bHasVetoData)
@@ -813,6 +1065,12 @@ JSONArray BuildTeamPlayers(int team)
 
         JSONObject item = new JSONObject();
         item.SetString("name", playerName);
+        if (NativeAvailable("MatchPlayer.AuthId"))
+        {
+            char authId[40];
+            if (player.AuthId(authId, sizeof(authId)) && authId[0] != '\0')
+                item.SetString("auth_id", authId);
+        }
         item.SetInt("kills", player.Frags());
         item.SetInt("deaths", player.Deaths());
         item.SetBool("stats_available", true);
@@ -888,9 +1146,9 @@ char[] FormatVetoTeam(int team)
 {
     static char buffer[128];
     if (team == view_as<int>(WarSeries_TeamA))
-        strcopy(buffer, sizeof(buffer), g_sSeriesTeamAName[0] ? g_sSeriesTeamAName : "Team A");
+        strcopy(buffer, sizeof(buffer), g_sSeriesTeamAName);
     else if (team == view_as<int>(WarSeries_TeamB))
-        strcopy(buffer, sizeof(buffer), g_sSeriesTeamBName[0] ? g_sSeriesTeamBName : "Team B");
+        strcopy(buffer, sizeof(buffer), g_sSeriesTeamBName);
     else
         buffer[0] = '\0';
     return buffer;
