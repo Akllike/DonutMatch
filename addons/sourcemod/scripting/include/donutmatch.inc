@@ -132,12 +132,19 @@ forward void DonutMatch_OnMatchEnd(const any[] data, int dataSize);
 forward void DonutMatch_OnMatchReset(const char[] reason);
 
 /**
- * Вызывается после 15-го раунда основного времени перед сменой сторон.
+ * Вызывается после установленного числа раундов основного времени перед сменой сторон.
  *
  * @param scoreT        Счёт террористов перед сменой сторон.
  * @param scoreCT       Счёт спецназа перед сменой сторон.
  */
 forward void DonutMatch_OnHalfTime(int scoreT, int scoreCT);
+
+/** Вызывается при изменении числа раундов за сторону в основном времени.
+ *
+ * @param oldRoundsPerHalf Предыдущее значение.
+ * @param newRoundsPerHalf Новое значение.
+ */
+forward void DonutMatch_OnRoundsPerHalfChanged(int oldRoundsPerHalf, int newRoundsPerHalf);
 
 /**
  * Вызывается после завершения серии из трех рестартов в начале матча
@@ -428,6 +435,21 @@ methodmap DonutMatch < Handle
      * @return Число раундов для выбранного этапа.
      */
     public native int MaxRounds(bool overtime = false);
+    /**
+     * Возвращает установленное число раундов за сторону в основном времени.
+     *
+     * @return Число раундов за половину (например, 15 для MR15 или 12 для MR12).
+     */
+    public native int RoundsPerHalf();
+    /**
+     * Устанавливает число раундов за сторону в основном времени.
+     *
+     * @param roundsPerHalf Число раундов за половину, от 1 до 30.
+     * @return true, если значение допустимо и принято; иначе false.
+     * @note Изменение обновляет convar `donut_rounds_per_half` и вызывает
+     *       DonutMatch_OnRoundsPerHalfChanged при фактическом изменении значения.
+     */
+    public native bool SetRoundsPerHalf(int roundsPerHalf);
     /**
      * Возвращает счёт команды на перерыве указанного этапа.
      *
@@ -991,6 +1013,8 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("DonutMatch.IsPlayerInMatch");
     MarkNativeAsOptional("DonutMatch.Captain");
     MarkNativeAsOptional("DonutMatch.MaxRounds");
+    MarkNativeAsOptional("DonutMatch.RoundsPerHalf");
+    MarkNativeAsOptional("DonutMatch.SetRoundsPerHalf");
     MarkNativeAsOptional("DonutMatch.HalftimeScore");
     MarkNativeAsOptional("DonutMatch.TeamName");
     MarkNativeAsOptional("DonutMatch.SetTeamName");
