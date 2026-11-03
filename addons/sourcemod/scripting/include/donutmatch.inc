@@ -429,16 +429,18 @@ methodmap DonutMatch < Handle
      */
     public native int Captain(int team);
     /**
-     * Возвращает число раундов в матче или овертайме.
+    * Возвращает число раундов текущего матча или выбранного этапа.
      *
      * @param overtime true — запросить число раундов овертайма.
      * @return Число раундов для выбранного этапа.
+    * @note Во время матча возвращаются зафиксированные при старте значения; иначе — текущие значения cvar.
      */
     public native int MaxRounds(bool overtime = false);
     /**
-     * Возвращает установленное число раундов за сторону в основном времени.
+    * Возвращает число раундов за сторону в основном времени.
      *
      * @return Число раундов за половину (например, 15 для MR15 или 12 для MR12).
+    * @note Во время матча возвращается значение, зафиксированное при старте; иначе — текущее значение cvar.
      */
     public native int RoundsPerHalf();
     /**
@@ -448,6 +450,7 @@ methodmap DonutMatch < Handle
      * @return true, если значение допустимо и принято; иначе false.
      * @note Изменение обновляет convar `donut_rounds_per_half` и вызывает
      *       DonutMatch_OnRoundsPerHalfChanged при фактическом изменении значения.
+    * @note Если матч уже запущен, новое значение применяется со следующего матча.
      */
     public native bool SetRoundsPerHalf(int roundsPerHalf);
     /**
