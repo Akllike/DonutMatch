@@ -173,7 +173,7 @@
     "SameMap"
     {
         "en" "{green}[DonutMatch]{white} The same map was picked. A new Mix starts in 10 seconds."
-        "ru" "{green}[DonutMatch]{white} Та же карта выбрана снова. Новый Mix начнется через 10 секунд."
+        "ru" "{green}[DonutMatch]{white} Та же карта выбрана снова. Новый Mix начнется через 60 секунд."
     }
     "MarkedReady"
     {
@@ -659,7 +659,7 @@
     "VoteNew"
     {
         "en" "{green}[DonutMatch]{white} The vote is over. A new Mix starts in 10 seconds if the map stays the same."
-        "ru" "{green}[DonutMatch]{white} Голосование завершено. Новый Mix начнется через 10 секунд, если карта останется прежней."
+        "ru" "{green}[DonutMatch]{white} Голосование завершено. Новый Mix начнется через 60 секунд, если карта останется прежней."
     }
     "MapVote"
     {

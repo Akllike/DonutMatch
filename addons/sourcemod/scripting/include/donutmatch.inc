@@ -433,14 +433,14 @@ methodmap DonutMatch < Handle
      *
      * @param overtime true — запросить число раундов овертайма.
      * @return Число раундов для выбранного этапа.
-    * @note Во время матча возвращаются зафиксированные при старте значения; иначе — текущие значения cvar.
+     * @note Во время матча возвращаются зафиксированные при старте значения; иначе — текущие значения cvar.
      */
     public native int MaxRounds(bool overtime = false);
     /**
     * Возвращает число раундов за сторону в основном времени.
      *
      * @return Число раундов за половину (например, 15 для MR15 или 12 для MR12).
-    * @note Во время матча возвращается значение, зафиксированное при старте; иначе — текущее значение cvar.
+     * @note Во время матча возвращается значение, зафиксированное при старте; иначе — текущее значение cvar.
      */
     public native int RoundsPerHalf();
     /**
@@ -448,9 +448,8 @@ methodmap DonutMatch < Handle
      *
      * @param roundsPerHalf Число раундов за половину, от 1 до 30.
      * @return true, если значение допустимо и принято; иначе false.
-     * @note Изменение обновляет convar `donut_rounds_per_half` и вызывает
-     *       DonutMatch_OnRoundsPerHalfChanged при фактическом изменении значения.
-    * @note Если матч уже запущен, новое значение применяется со следующего матча.
+     * @note Изменение обновляет convar `donut_rounds_per_half` и вызывает DonutMatch_OnRoundsPerHalfChanged при фактическом изменении значения.
+     * @note Если матч уже запущен, новое значение применяется со следующего матча.
      */
     public native bool SetRoundsPerHalf(int roundsPerHalf);
     /**
@@ -595,9 +594,10 @@ methodmap DonutMatch < Handle
      */
     public native bool LastTeamName(int team, char[] buffer, int size);
     /**
-        * Возвращает формат активной серии или следующий формат War, если серия неактивна.
-        * @return WarSeries_Classic по умолчанию, либо WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
-        * @note Не определяет формат выбранного матча War; для этого используйте WarMatchFormat().
+     * Возвращает формат активной серии или следующий формат War, если серия неактивна.
+     * 
+     * @return WarSeries_Classic по умолчанию, либо WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
+     * @note Не определяет формат выбранного матча War; для этого используйте WarMatchFormat().
      */
     public native WarSeriesMode WarSeriesMode();
     /**
