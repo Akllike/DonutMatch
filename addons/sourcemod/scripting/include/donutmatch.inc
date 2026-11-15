@@ -379,25 +379,49 @@ methodmap DonutMatch < Handle
      */
     public native void GetScore(int &scoreT, int &scoreCT);
     /**
-     * Немедленно запускает подготовку матча, если состав и состояние позволяют это.
-     *
+     * Принудительно запускает матч, если состав и состояние позволяют это сделать.
+     * @param delay Задержка перед началом live после подтверждения готовности; -1 использует donut_restart_delay.
      * @return true, если запуск принят; иначе false.
      * @note Готовность игроков при этом принудительном запуске не проверяется.
-     * @note Возвращает false во время голосования капитанов за формат War.
      */
-    public native bool Start();
+    public native bool Start(float delay = -1.0);
+    /**
+     * Настраивает режим и формат состава до начала матча.
+     * @param mode Режим: MODE_MIX или MODE_WAR.
+     * @param playersPerSide Количество игроков в каждой команде, от 1 до 5.
+     * @param roundsPerHalf Количество раундов за половину, от 1 до 30.
+     * @return true, если настройки применены; иначе false.
+     */
+    public native bool ConfigureMatch(GameMode mode, int playersPerSide, int roundsPerHalf);
+    /**
+     * Изменяет режим работы и сохраняет остальные настройки матча.
+     * @param mode Режим: MODE_MIX или MODE_WAR.
+     * @return true, если режим изменён; иначе false.
+     */
+    public native bool SetMode(GameMode mode);
+    /**
+     * Изменяет количество игроков в каждой команде.
+     * @param playersPerSide Количество игроков на сторону, от 1 до 5.
+     * @return true, если размер состава изменён; иначе false.
+     */
+    public native bool SetPlayersPerSide(int playersPerSide);
+    /**
+     * Запускает ножевой раунд WAR после завершения подготовки и перехода в Warmup.
+     * @return true, если ножевой раунд запущен; иначе false.
+     */
+    public native bool StartKnifeRound();
     /**
      * Останавливает текущий матч и сбрасывает его состояние.
      *
      * @param reason Причина остановки, передаваемая в событие сброса.
-    * @return true, если запрос сброса обработан; результат не указывает, был ли активен матч.
+     * @return true, если запрос сброса обработан; результат не указывает, был ли активен матч.
      */
     public native bool Stop(const char[] reason);
     /**
      * Меняет местами игроков команд T и CT, счёт и названия команд.
      *
      * @return true, если стороны переключены; иначе false.
-     * @note Возвращает false, если режим не задан, идёт драфт Mix или голосование за формат War,
+     * @note Возвращает false, если режим не задан, идёт ножевой раунд или драфт Mix, голосование за формат War,
      *       либо выполняется переход/голосование за карту.
      */
     public native bool SwapTeams();
@@ -669,9 +693,9 @@ methodmap DonutMatch < Handle
     public native ArrayList WarSeriesMaps();
     /**
      * Задаёт формат следующей серии War и пропускает голосование капитанов за формат.
-     * @param mode Формат серии: WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
-     * @return true, если формат задан; иначе false.
-     * @note Возвращает false во время активной серии или голосования за формат.
+     * @param mode Формат: WarSeries_Classic, WarSeries_BO1, WarSeries_BO3 или WarSeries_BO5.
+     * @return true, если формат принят; иначе false.
+     * @note Настройка доступна до начала серии и вне голосования за формат.
      */
     public native bool SetWarSeriesMode(WarSeriesMode mode);
     /**
@@ -681,6 +705,18 @@ methodmap DonutMatch < Handle
      * @note Изменение запрещено во время активной серии.
      */
     public native bool SetWarSeriesMapPool(const char[] mapPool);
+    /**
+     * Задаёт точный порядок карт следующей серии.
+     * @param maps Список валидных уникальных карт: 1 карта для BO1, 3 для BO3 или 5 для BO5.
+     * @return true, если список принят; иначе false.
+     */
+    public native bool SetWarSeriesMapOrder(ArrayList maps);
+    /**
+     * Возвращает игровую сторону команды серии на текущей карте.
+     * @param team Команда серии: WarSeries_TeamA или WarSeries_TeamB.
+     * @return CS_TEAM_T или CS_TEAM_CT; CS_TEAM_NONE, если серия или сторона не определена.
+     */
+    public native int WarSeriesSide(WarSeriesTeam team);
     /**
      * Принимает veto-выбор текущего капитана для доступной карты.
      * @param client Индекс подключённого капитана, которому принадлежит текущий ход.
@@ -760,6 +796,13 @@ methodmap MatchPlayer < Handle
      * @note Игрок может находиться не только в наблюдателях: метод переведёт его в указанную команду.
      */
     public native bool AssignToTeam(int team);
+    /**
+     * Переводит игрока за указанную сторону WAR через API DonutMatch.
+     * @param team Команда: CS_TEAM_T, CS_TEAM_CT или CS_TEAM_SPECTATOR.
+     * @return true, если переход выполнен или игрок уже находится в этой команде; иначе false.
+     * @note Во время активной серии перевод выполняется только на свободное место этой команды.
+     */
+    public native bool MoveToTeam(int team);
     /**
      * Удаляет участника Mix из состава и переводит его в наблюдатели.
      *
@@ -1009,6 +1052,10 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("DonutMatch.SetReady");
     MarkNativeAsOptional("DonutMatch.GetScore");
     MarkNativeAsOptional("DonutMatch.Start");
+    MarkNativeAsOptional("DonutMatch.ConfigureMatch");
+    MarkNativeAsOptional("DonutMatch.SetMode");
+    MarkNativeAsOptional("DonutMatch.SetPlayersPerSide");
+    MarkNativeAsOptional("DonutMatch.StartKnifeRound");
     MarkNativeAsOptional("DonutMatch.Stop");
     MarkNativeAsOptional("DonutMatch.SwapTeams");
     MarkNativeAsOptional("DonutMatch.PlayersPerSide");
@@ -1056,6 +1103,8 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("DonutMatch.WarSeriesMaps");
     MarkNativeAsOptional("DonutMatch.SetWarSeriesMode");
     MarkNativeAsOptional("DonutMatch.SetWarSeriesMapPool");
+    MarkNativeAsOptional("DonutMatch.SetWarSeriesMapOrder");
+    MarkNativeAsOptional("DonutMatch.WarSeriesSide");
     MarkNativeAsOptional("DonutMatch.ChooseWarVetoMap");
     MarkNativeAsOptional("MatchPlayer.IsValid");
     MarkNativeAsOptional("MatchPlayer.IsReady");
@@ -1068,6 +1117,7 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("MatchPlayer.AskForSubstitute");
     MarkNativeAsOptional("MatchPlayer.UserId");
     MarkNativeAsOptional("MatchPlayer.AssignToTeam");
+    MarkNativeAsOptional("MatchPlayer.MoveToTeam");
     MarkNativeAsOptional("MatchPlayer.RemoveFromRoster");
     MarkNativeAsOptional("MatchPlayer.AuthId");
     MarkNativeAsOptional("MatchPlayer.Name");

@@ -1032,4 +1032,41 @@
         "en" "The roster changed during the War format vote. Everyone must ready up again."
         "ru" "Состав изменился во время голосования за формат War. Игрокам нужно снова написать !ready."
     }
+    "Reset_WarSeriesRosterChanged"
+    {
+        "en" "A player left the War series roster. The match has been reset."
+        "ru" "Игрок покинул состав War-серии. Матч сброшен."
+    }
+    "Reset_VoteStop"
+    {
+        "en" "The match was stopped by player vote."
+        "ru" "Матч остановлен голосованием игроков."
+    }
+    "VoteStopDisabled"
+    {
+        "en" "{green}[DonutMatch]{white} The vote to stop the match is disabled."
+        "ru" "{green}[DonutMatch]{white} Голосование за остановку матча отключено."
+    }
+    "VoteStopPlayersOnly"
+    {
+        "en" "{green}[DonutMatch]{white} Only active match players can vote to stop the match."
+        "ru" "{green}[DonutMatch]{white} Голосовать за остановку матча могут только его участники."
+    }
+    "VoteStopAlreadyVoted"
+    {
+        "en" "{green}[DonutMatch]{white} You have already voted to stop the match."
+        "ru" "{green}[DonutMatch]{white} Вы уже проголосовали за остановку матча."
+    }
+    "VoteStopProgress"
+    {
+        #format "{1:N},{2:d},{3:d}"
+        "en" "{green}[DonutMatch]{white} {1} votes to stop the match: {olive}{2}/{3}{white}."
+        "ru" "{green}[DonutMatch]{white} {1} голосует за остановку матча: {olive}{2}/{3}{white}."
+    }
+    "SameMapMixCountdown"
+    {
+        #format "{1:d}"
+        "en" "Starting the mix system in {1} seconds."
+        "ru" "Запуск системы через {1} сек."
+    }
 }
