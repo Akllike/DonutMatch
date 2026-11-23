@@ -724,6 +724,14 @@ methodmap DonutMatch < Handle
      * @return true, если выбор принят; иначе false.
      */
     public native bool ChooseWarVetoMap(int client, const char[] mapName);
+    /**
+     * Включает или отключает стандартную подсказку готовности.
+     *
+     * Не влияет на систему !ready и запуск матча.
+     *
+     * @param enabled true — показывать, false — скрывать.
+     */
+    public native void SetReadyHintEnabled(bool enabled);
 };
 
 /** Объект для управления конкретным игроком матча. */
