@@ -81,6 +81,13 @@ enum WarVetoAction
  */
 forward void DonutMatch_OnPlayerReady(int client, bool ready);
 
+/** Вызывается, когда участник активного матча отмечается как AFK или возвращается к активности.
+ *
+ * @param client Индекс игрока.
+ * @param afk    true, если игрок отмечен как AFK; false, если он вернулся к активности.
+ */
+forward void DonutMatch_OnPlayerAFK(int client, bool afk);
+
 /** Вызывается при начале или завершении активной паузы. */
 forward void DonutMatch_OnPauseChanged(bool paused, MatchPauseReason reason, int team, int requesterUserId);
 
@@ -407,6 +414,7 @@ methodmap DonutMatch < Handle
     public native bool SetPlayersPerSide(int playersPerSide);
     /**
      * Запускает ножевой раунд WAR после завершения подготовки и перехода в Warmup.
+     * Для запуска должны быть назначены оба действующих капитана.
      * @return true, если ножевой раунд запущен; иначе false.
      */
     public native bool StartKnifeRound();
@@ -554,12 +562,22 @@ methodmap DonutMatch < Handle
      * @return true, если голосование активно; иначе false. Счётчики заполняются в любом случае.
      */
     public native bool GetOvertimeVote(int &yesVotes, int &noVotes, int &eligibleVotes);
-    /** Проверяет, активна ли сейчас пауза матча. */
+    /**
+     * Проверяет, приостановлен ли матч в данный момент.
+     *
+     * @return true, если уже действует тактическая/API-пауза или пауза голосования за овертайм.
+     */
     public native bool IsPaused();
-    /** Проверяет, ожидается ли тактическая/API пауза на следующий раунд. */
+    /**
+     * Проверяет, поставлена ли тактическая/API-пауза в очередь на следующий раунд.
+     *
+     * @return true, если пауза ожидает начала; false, если очередь пуста.
+     * @note Не показывает паузу голосования за овертайм: для неё используйте IsPaused().
+     */
     public native bool IsPausePending();
     /**
-     * Ставит 30-секундную паузу в очередь на следующий раунд или отменяет API-заявку.
+     * Ставит паузу длительностью из donut_pause_duration в очередь на следующий раунд
+     * или отменяет ожидающую API-заявку.
      *
      * @param paused true — поставить паузу в очередь; false — отменить ожидающую API-заявку.
      * @return true, если действие принято; false, если запрос конфликтует с текущим состоянием.
@@ -1114,6 +1132,7 @@ public void __pl_donutmatch_SetNTVOptional()
     MarkNativeAsOptional("DonutMatch.SetWarSeriesMapOrder");
     MarkNativeAsOptional("DonutMatch.WarSeriesSide");
     MarkNativeAsOptional("DonutMatch.ChooseWarVetoMap");
+    MarkNativeAsOptional("DonutMatch.SetReadyHintEnabled");
     MarkNativeAsOptional("MatchPlayer.IsValid");
     MarkNativeAsOptional("MatchPlayer.IsReady");
     MarkNativeAsOptional("MatchPlayer.SetReady");

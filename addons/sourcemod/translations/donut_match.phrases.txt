@@ -11,11 +11,11 @@
         "en" "{green}[DonutMatch]{white} Confirm that you are ready to start the match. Type !ready."
         "ru" "{green}[DonutMatch]{white} Теперь подтвердите готовность к началу матча. Напишите !ready."
     }
-    "MatchStarts"
+    "MatchStartsHint"
     {
         #format "{1:d}"
-        "en" "{green}[DonutMatch]{white} Match starts in{red} {1}..."
-        "ru" "{green}[DonutMatch]{white} Матч начнется через{red} {1}..."
+        "en" "MATCH STARTING\nGet ready: {1}..."
+        "ru" "МАТЧ НАЧИНАЕТСЯ\nПриготовьтесь: {1}..."
     }
     "CaptainsKnifeStarts"
     {
@@ -719,6 +719,17 @@
         "en" "{1} offered you a substitution.\n--------------------------------"
         "ru" "{1} предлагает вам замену.\n--------------------------------"
     }
+    "AfkSubstitutionOffer"
+    {
+        #format "{1:s}"
+        "en" "AFK player {1} can be replaced. Accept the slot?"
+        "ru" "Игрок {1} отмечен как AFK. Занять его место?"
+    }
+    "AfkReplacedKick"
+    {
+        "en" "You were replaced after being marked AFK."
+        "ru" "Вас заменили после отметки AFK."
+    }
     "TeamWonNchoose"
     {
         "en" "Your team won!\nChoose your starting side:\n--------------------------------"
@@ -1068,5 +1079,90 @@
         #format "{1:d}"
         "en" "Starting the mix system in {1} seconds."
         "ru" "Запуск системы через {1} сек."
+    }
+    "PlayerAFK"
+    {
+        #format "{1:s}"
+        "en" "{1} has been marked AFK for inactivity."
+        "ru" "Игрок {1} отмечен как AFK за бездействие."
+    }
+    "PlayerAFKMix"
+    {
+        #format "{1:s}"
+        "en" "{1} has been marked AFK. Spectators can accept an offer to replace them."
+        "ru" "Игрок {1} отмечен как AFK. Спектаторы могут принять предложение занять его место."
+    }
+    "PlayerAFKReturned"
+    {
+        #format "{1:s}"
+        "en" "{1} is active again."
+        "ru" "Игрок {1} снова активен."
+    }
+    "CommandBlocked"
+    {
+        "en" "{green}[DonutMatch]{white} This command is disabled during the match."
+        "ru" "{green}[DonutMatch]{white} Эта команда отключена во время матча."
+    }
+    "Reset_AdminForceStart"
+    {
+        "en" "The match was force-started by an administrator."
+        "ru" "Матч принудительно запущен администратором."
+    }
+    "Reset_AdminStopped"
+    {
+        "en" "The match was stopped by an administrator."
+        "ru" "Матч остановлен администратором."
+    }
+    "DonutMatch_AdminMenu"
+    {
+        "en" "DonutMatch"
+        "ru" "DonutMatch"
+    }
+    "DonutMatch_AdminTitle"
+    {
+        "en" "DonutMatch management"
+        "ru" "Управление DonutMatch"
+    }
+    "DonutMatch_AdminStart"
+    {
+        "en" "Force start match"
+        "ru" "Принудительно запустить матч"
+    }
+    "DonutMatch_AdminStop"
+    {
+        "en" "Stop match"
+        "ru" "Остановить матч"
+    }
+    "DonutMatch_AdminMode"
+    {
+        #format "{1:s}"
+        "en" "Mode: {1}"
+        "ru" "Режим: {1}"
+    }
+    "DonutMatch_AdminMix"
+    {
+        "en" "Mix"
+        "ru" "Mix"
+    }
+    "DonutMatch_AdminWar"
+    {
+        "en" "War"
+        "ru" "War"
+    }
+    "DonutMatch_AdminPlayers"
+    {
+        #format "{1:d},{2:d}"
+        "en" "Players per side: {1}v{2}"
+        "ru" "Игроков за сторону: {1}x{2}"
+    }
+    "DonutMatch_AdminPlayersTitle"
+    {
+        "en" "Choose players per side"
+        "ru" "Выберите количество игроков за сторону"
+    }
+    "DonutMatch_AdminDebug"
+    {
+        "en" "Show debug information in your console"
+        "ru" "Показать отладочную информацию в консоли"
     }
 }
