@@ -14,8 +14,8 @@
     "MatchStartsHint"
     {
         #format "{1:d}"
-        "en" "MATCH STARTING\nGet ready: {1}..."
-        "ru" "МАТЧ НАЧИНАЕТСЯ\nПриготовьтесь: {1}..."
+        "en" "Match starting!\nGet ready: {1}..."
+        "ru" "Матч начинается!\nПриготовьтесь: {1}..."
     }
     "CaptainsKnifeStarts"
     {
@@ -197,8 +197,8 @@
     }
     "AvailableCommands"
     {
-        "en" "{green}[DonutMatch]{white} Commands: !ready/!r, !pause (live), !info, !score/!scores, !lastscore\n!damage, !money, !teamname (captains), !knife/!stay (War), !ask (Mix)"
-        "ru" "{green}[DonutMatch]{white} Команды: !ready/!r, !pause (во время матча), !info, !score/!scores, !lastscore\n!damage, !money, !teamname (капитаны), !knife/!stay (War), !ask (Mix)"
+        "en" "{green}[DonutMatch]{white} Commands: !ready/!r, !pause (live), !info, !score/!scores, !lastscore\n!damage, !money, !teamname, !knife/!stay (War), !ask (Mix)"
+        "ru" "{green}[DonutMatch]{white} Команды: !ready/!r, !pause, !info, !score/!scores, !lastscore\n!damage, !money, !teamname, !knife/!stay, !ask"
     }
     "LeftSubstitution"
     {
@@ -730,6 +730,11 @@
         "en" "You were replaced after being marked AFK."
         "ru" "Вас заменили после отметки AFK."
     }
+    "AfkNoReplacementKick"
+    {
+        "en" "You were kicked for inactivity because no substitute was available."
+        "ru" "Вас кикнули за бездействие."
+    }
     "TeamWonNchoose"
     {
         "en" "Your team won!\nChoose your starting side:\n--------------------------------"
@@ -1159,6 +1164,11 @@
     {
         "en" "Choose players per side"
         "ru" "Выберите количество игроков за сторону"
+    }
+    "LeaverBanReason"
+    {
+        "en" "Left an active match."
+        "ru" "Выход из активного матча."
     }
     "DonutMatch_AdminDebug"
     {
